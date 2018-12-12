@@ -8,6 +8,8 @@
 #include <KMPCommon.h>
 #include <DHT.h>
 
+#define TINY_GSM_MODEM_UBLOX
+#include <TinyGsmClient.h>
 /* https://github.com/NatanBiesmans/Arduino-POST-HTTP-Parser */
 #include <postParser.h>
 
@@ -35,6 +37,12 @@ const char ip_key[] = "IPAddr";
 
 // Buffer size used to read from serial
 #define SERIAL_BUF_SIZE 32
+
+// SIM PIN
+const char PINNUMBER[] = "1234";
+
+// APN
+const char GPRS_APN[] = "Free";
 
 #define ARRAY_LEN 9
 
@@ -92,6 +100,64 @@ IPAddress decimal_to_ip(int ip) {
   return ip_addr.fromString(decimal_to_ip_string(ip));
 }
 
+TinyGsm modem(SerialGSM);
+unsigned int gsm_modem_rate = 0;
+
+void setup_modem() {
+  pinMode(GSM_DTR, OUTPUT);
+  digitalWrite(GSM_DTR, LOW);
+
+  pinMode(GSM_RESETN, OUTPUT);
+  digitalWrite(GSM_RESETN, HIGH);
+  delay(100);
+  digitalWrite(GSM_RESETN, LOW);
+
+#ifdef DEBUG
+  Serial.println("Initializing modem...");
+#endif
+  if (!gsm_modem_rate) {
+    gsm_modem_rate = TinyGsmAutoBaud(SerialGSM);
+  }
+
+
+  modem.init();
+  String modemInfo = modem.getModemInfo();
+#ifdef DEBUG
+  if (modemInfo == "")
+    Serial.println("Modem is not started!!!");
+  else
+    Serial.print("Modem started: ");
+    Serial.println(modemInfo);
+#endif
+
+  // Unlock your SIM card if it locked with a PIN code.
+  // If PIN is not valid don't try more than 3 time because the SIM card locked and need unlock with a PUK code.
+  if (strlen(PINNUMBER) > 0 && !modem.simUnlock(PINNUMBER)) {
+#ifdef DEBUG
+    Serial.println("PIN code is not valid! STOP!!!");
+#endif
+  }
+  else {
+#ifdef DEBUG
+    Serial.println("Successfully authenticated SIM.");
+#endif
+  }
+
+
+}
+
+void setup_ethernet() {
+#ifdef DEBUG
+  Serial.write("begin ethernet..");
+#endif
+
+  Ethernet.begin(mac);
+
+#ifdef DEBUG
+  Serial.write(" got IP addr ");
+  Serial.println(Ethernet.localIP());
+#endif
+}
 
 
 void setup()
@@ -104,16 +170,9 @@ void setup()
 	// Init Dino board. Set pins, start W5500.
 	KMPProDinoMKRZero.init(ProDino_MKR_Zero_Ethernet);
 
-#ifdef DEBUG
-  Serial.write("begin ethernet..");
-#endif
+  setup_ethernet();
+  setup_modem();
 
-  Ethernet.begin(mac);
-
-#ifdef DEBUG
-  Serial.write(" got IP addr ");
-  Serial.println(Ethernet.localIP());
-#endif
 }
 
 // buffer containing received characters
