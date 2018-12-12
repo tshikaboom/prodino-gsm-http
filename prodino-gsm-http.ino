@@ -143,8 +143,37 @@ void setup_modem() {
 #endif
   }
 
+#ifdef DEBUG
+  Serial.println("Waiting for network...");
+#endif
+  if (!modem.waitForNetwork()) {
+    delay(10000);
+    return;
+  }
+
+
+  if (modem.isNetworkConnected()) {
+
+  }
+
+#ifdef DEBUG
+  Serial.print("Connecting to ");
+  Serial.print(GPRS_APN);
+  Serial.print("... ");
+#endif
+  if (!modem.gprsConnect(GPRS_APN, "", "")) {
+    delay(10000);
+    return;
+  }
+  else {
+#ifdef DEBUG
+    Serial.println("connected.");
+#endif
+  }
 
 }
+
+
 
 void setup_ethernet() {
 #ifdef DEBUG
