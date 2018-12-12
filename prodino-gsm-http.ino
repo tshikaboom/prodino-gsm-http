@@ -29,14 +29,14 @@ byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 // Max number of IPs in the ACL
 #define ACL_IP_MAX 32
 
-// ACL containing allowed IP addresses
-IPAddress current_acl[ACL_IP_MAX];
+// ACL containing allowed IP addresses, in uint32_t's
+uint32_t current_acl[ACL_IP_MAX];
 
 // String used to get an IP address from the tty
 const char ip_key[] = "IPAddr";
 
 // Buffer size used to read from serial
-#define SERIAL_BUF_SIZE 32
+#define SERIAL_BUF_SIZE 64
 
 // SIM PIN
 const char PINNUMBER[] = "1234";
@@ -103,6 +103,17 @@ IPAddress decimal_to_ip(int ip) {
 TinyGsm modem(SerialGSM);
 unsigned int gsm_modem_rate = 0;
 
+void setup_acl() {
+  unsigned int i;
+
+  /*
+   * Initialize the ACL array to 0.
+   * This serves as a sentinel value and an invalid IP.
+   */
+  for (i = 0; i < ACL_IP_MAX; i++) {
+    current_acl[i] = 0;
+  }
+}
 
 
 void setup_ethernet() {
