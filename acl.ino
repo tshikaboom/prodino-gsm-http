@@ -1,3 +1,6 @@
+#include <KMPProDinoMKRZero.h>
+
+extern uint32_t current_acl[ACL_IP_MAX];
 
 void refresh_acls() {
   // Get IP addresses from SIM card and overwrite the current_acl array
@@ -5,9 +8,19 @@ void refresh_acls() {
 
 void add_ip_to_acl(IPAddress ip) {
   // Add IP address to ACL
-
+  add_acl_to_sim(ip_to_decimal(ip));
   // Refresh the list of allowed IPs in memory
   refresh_acls();
+}
+
+void print_acl() {
+  int i;
+
+  for (i = 0; i < ACL_IP_MAX; i++) {
+    Serial.println(current_acl[i]);
+    if (current_acl[i] == 0)
+      break;
+  }
 }
 
 // Parse

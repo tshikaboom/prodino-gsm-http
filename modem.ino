@@ -4,6 +4,97 @@
 
 extern unsigned int gsm_modem_rate;
 
+
+void parse_contact() {
+  int index, index2, i;
+  if (new_data == true) {
+    String s = String(received_chars);
+    s.trim();
+    if (s[0] == '+') {
+#ifdef DEBUG
+      Serial.println("Got this string from SIM:");
+      Serial.println(s);
+#endif
+      if (s.indexOf("ACL") > 0) {
+        index = s.indexOf("\"");
+        String new_integer = s.substring(index + 1);
+        String real_integer = new_integer.substring(0, new_integer.indexOf("\""));
+#ifdef DEBUG
+        Serial.println(String("Adding ") + strtoul(new_integer.c_str(), NULL, 10));
+#endif
+        for (i = 0; i < ACL_IP_MAX; i++) {
+          if (current_acl[i] == 0)
+            break;
+        }
+        current_acl[i] = strtoul(new_integer.c_str(), NULL, 10);
+        print_acl();
+      }
+      else {
+#ifdef DEBUG
+        Serial.println("... but no ACL entry.");
+#endif
+      }
+    }
+  }
+  for (i = 0; i < SERIAL_BUF_SIZE; i++)
+    received_chars[i] = '\0';
+
+  new_data = false;
+}
+
+
+// Receive a string of maximum size SERIAL_BUF_SIZE, ending with a '\n'
+void modem_recvWithEndMarker() {
+  static byte idx = 0;
+  char endMarker = '\n', endMarker2 = '\n';
+  char rc;
+
+  while (SerialGSM.available()) {
+    for (idx = 0; idx < SERIAL_BUF_SIZE - 1; idx++) {
+      rc = SerialGSM.read();
+      if (rc != endMarker || rc != endMarker2) {
+        received_chars[idx] = rc;
+      }
+      else {
+        received_chars[idx] = '\0'; // terminate the string
+        new_data = true;
+        break;
+      }
+    }
+    received_chars[idx] = '\0';
+    parse_contact();
+
+  }
+
+}
+
+
+void get_acl_from_sim() {
+  bool more_data;
+  SerialGSM.println("AT+CPBF=\"ACL\"");
+  delay(100);
+
+  modem_recvWithEndMarker();
+}
+
+int add_acl_to_sim(uint32_t new_ip) {
+  int i, index;
+
+  for (i = 0; i < ACL_IP_MAX; i++) {
+    if (current_acl[i] == 0) {
+      index = i;
+      index++;
+      break;
+    }
+  }
+  Serial.println(String("AT+CPBW=") + index + "," + "\"" + new_ip + "\"" + ",," + "\"" + "ACL" + "\"");
+  SerialGSM.println(String("AT+CPBW=") + index + "," + "\"" + new_ip + "\"" + ",," + "\"" + "ACL" + "\"");
+  delay(100);
+#ifdef DEBUG
+  Serial.println(SerialGSM.readString());
+#endif
+}
+
 void setup_modem() {
   pinMode(GSM_DTR, OUTPUT);
   digitalWrite(GSM_DTR, LOW);
@@ -45,18 +136,18 @@ void setup_modem() {
   }
 
 #ifdef DEBUG
-  Serial.println("Waiting for network...");
+  Serial.print("Waiting for network...");
 #endif
   if (!modem.waitForNetwork()) {
     delay(10000);
     return;
   }
 
-
+#ifdef DEBUG
   if (modem.isNetworkConnected()) {
-
+    Serial.println(" ok.");
   }
-
+#endif
 #ifdef DEBUG
   Serial.print("Connecting to ");
   Serial.print(GPRS_APN);
@@ -68,9 +159,13 @@ void setup_modem() {
   }
   else {
 #ifdef DEBUG
-    Serial.println("connected.");
+    Serial.println("ok.");
 #endif
   }
 
+#ifdef DEBUG
+  Serial.println("Now getting some contacts...");
+#endif
+  get_acl_from_sim();
 }
 
