@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: MIT */
 
 /* Initial working version featuring some real citations from famous people
- *
- */
+
+*/
 
 #include <KMPProDinoMKRZero.h>
 #include <KMPCommon.h>
@@ -89,7 +89,7 @@ int ip_to_decimal(IPAddress ip) {
 }
 
 String decimal_to_ip_string(int ip) {
-    return String(((ip >> 24) & 0xFF)) + "."
+  return String(((ip >> 24) & 0xFF)) + "."
          + String(((ip >> 16) & 0xFF)) + "."
          + String(((ip >> 8) & 0xFF)) + "."
          + String((ip & 0xFF));
@@ -127,7 +127,7 @@ void setup_modem() {
     Serial.println("Modem is not started!!!");
   else
     Serial.print("Modem started: ");
-    Serial.println(modemInfo);
+  Serial.println(modemInfo);
 #endif
 
   // Unlock your SIM card if it locked with a PIN code.
@@ -163,12 +163,12 @@ void setup_ethernet() {
 void setup()
 {
   // Unconditionally initialize the serial port
-	Serial.begin(115200);
+  Serial.begin(115200);
   while (!Serial) {
   }
 
-	// Init Dino board. Set pins, start W5500.
-	KMPProDinoMKRZero.init(ProDino_MKR_Zero_Ethernet);
+  // Init Dino board. Set pins, start W5500.
+  KMPProDinoMKRZero.init(ProDino_MKR_Zero_Ethernet);
 
   setup_ethernet();
   setup_modem();
@@ -183,26 +183,26 @@ boolean new_data = false;
 
 // Receive a string of maximum size SERIAL_BUF_SIZE, ending with a '\n'
 void recvWithEndMarker() {
-    static byte idx = 0;
-    char endMarker = '\n';
-    char rc;
+  static byte idx = 0;
+  char endMarker = '\n';
+  char rc;
 
-    while (Serial.available() > 0 && new_data == false) {
-        rc = Serial.read();
+  while (Serial.available() > 0 && new_data == false) {
+    rc = Serial.read();
 
-        if (rc != endMarker) {
-            received_chars[idx] = rc;
-            idx++;
-            if (idx >= SERIAL_BUF_SIZE) {
-                idx = SERIAL_BUF_SIZE - 1;
-            }
-        }
-        else {
-            received_chars[SERIAL_BUF_SIZE-1] = '\0'; // terminate the string
-            idx = 0;
-            new_data = true;
-        }
+    if (rc != endMarker) {
+      received_chars[idx] = rc;
+      idx++;
+      if (idx >= SERIAL_BUF_SIZE) {
+        idx = SERIAL_BUF_SIZE - 1;
+      }
     }
+    else {
+      received_chars[SERIAL_BUF_SIZE - 1] = '\0'; // terminate the string
+      idx = 0;
+      new_data = true;
+    }
+  }
 }
 
 
@@ -223,36 +223,36 @@ void add_ip_to_acl(IPAddress ip) {
 void parseIP() {
   int index_equals = -1;
   IPAddress ip;
-    if (new_data == true) {
-      String s = String(received_chars);
-      s.trim();
-      if (s.startsWith("IPAddr")) {
-        index_equals = s.indexOf('=');
-        if (index_equals != -1) {
+  if (new_data == true) {
+    String s = String(received_chars);
+    s.trim();
+    if (s.startsWith("IPAddr")) {
+      index_equals = s.indexOf('=');
+      if (index_equals != -1) {
 
-          if (ip.fromString(s.substring(index_equals+1))) {
+        if (ip.fromString(s.substring(index_equals + 1))) {
 #ifdef DEBUG
-            Serial.print("New IP going to be added: ");
-            Serial.println(ip);
+          Serial.print("New IP going to be added: ");
+          Serial.println(ip);
 #endif
-            add_ip_to_acl(ip);
-// test if IP address gets converted well
+          add_ip_to_acl(ip);
+          // test if IP address gets converted well
 #ifdef DEBUG_TEST
-            unsigned int ip_decimal = ip_to_decimal(ip);
-            Serial.print("Testing IP ");
-            Serial.print(ip);
-            Serial.print(" to decimal ");
-            Serial.print(ip_decimal);
-            Serial.print(" back to IP ");
-            Serial.println(decimal_to_ip_string(ip_decimal));
+          unsigned int ip_decimal = ip_to_decimal(ip);
+          Serial.print("Testing IP ");
+          Serial.print(ip);
+          Serial.print(" to decimal ");
+          Serial.print(ip_decimal);
+          Serial.print(" back to IP ");
+          Serial.println(decimal_to_ip_string(ip_decimal));
 #endif
 
-          }
-          else {
+        }
+        else {
 #ifdef DEBUG
-            Serial.println("Bad IP address format");
+          Serial.println("Bad IP address format");
 #endif
-          }
+        }
 
 
       } else {
@@ -263,7 +263,7 @@ void parseIP() {
       }
     }
     new_data = false;
-}
+  }
 }
 
 void HTTP200Citation(EthernetClient client, long random)
@@ -334,7 +334,7 @@ void loop(void)
         }
       }
     }
-      // give the web browser time to receive the data
+    // give the web browser time to receive the data
     delay(1);
     // close the connection:
     client.stop();
