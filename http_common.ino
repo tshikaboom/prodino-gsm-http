@@ -1,6 +1,9 @@
+/* SPDX-License-Identifier: MIT */
+
 #include <postParser.h>
 
 // this code blatantly stolen from HTTP POST parser's private functions
+// need to check license
 String get_header_field(String data, String key) {
 
   int keyIndex = data.indexOf(key);
@@ -14,6 +17,7 @@ String get_header_field(String data, String key) {
 }
 
 // this code blatantly stolen from HTTP POST parser's private functions
+// need to check license
 String getContentType(PostParser http_data) {
   String contentType = get_header_field(http_data.getHeader(), "content-type");
   if (contentType == "") {

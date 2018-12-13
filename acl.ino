@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 #include <KMPProDinoMKRZero.h>
 
 extern uint32_t current_acl[ACL_IP_MAX];

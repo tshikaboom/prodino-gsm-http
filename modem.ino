@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 
 #define TINY_GSM_MODEM_UBLOX
 #include <TinyGsmClient.h>
