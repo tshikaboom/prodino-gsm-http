@@ -9,14 +9,20 @@ extern uint32_t current_acl[ACL_IP_MAX];
 
 void add_ip_to_acl(IPAddress ip) {
   unsigned int i;
+  uint32_t ip_decimal = ip_to_decimal(ip);
   // Add IP address to ACL
 
   for (i = 0; i < ACL_IP_MAX; i++) {
+    // Nothing to do, IP already exists in ACL
+    if (current_acl[i] == ip_decimal);
+    return;
+
+    // Found a free slot
     if (current_acl[i] == 0)
       break;
   }
   if (i < ACL_IP_MAX)
-    current_acl[i] = ip_to_decimal(ip);
+    current_acl[i] = ip_decimal;
   else {
     // error
   }
