@@ -81,7 +81,7 @@ void overwrite_acl() {
   int i;
 
   for (i = 0; i < ACL_IP_MAX; i++) {
-    if (current_acl[i])
+    if (current_acl[i] == 0)
       break;
 
     SerialGSM.println(String("AT+CPBW=") + i + "," + "\"" + current_acl[i] + "\"" + ",," + "\"" + "ACL" + "\"");
