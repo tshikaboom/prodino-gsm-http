@@ -1,19 +1,28 @@
 ProDino GSM HTTP miniserver
 ===========================
 
-Currently it gets an IP address with DHCP, then serves real citations from famous
-people to a web browser pointed to the board.
+Features
+--------
+- Serves real citations from famous people to a web browser pointed to the
+board's IP address.
+- Support for a basic access control list. IP addresses not in the ACL trying to
+access the `/acl` endpoint currently get a HTTP 403 reply. The ACL is saved on
+the SIM card.
+    - Authorized IP addresses can be initially added with the serial console, by
+    sending a string of the form `"IPAddr=xxx.xxx.xxx.xxx"`.
+    - An authorized IP can add other IP addresses by `POST`ing with JSON data of
+    the form `{ "ip" : "1.2.3.4"}`
+    - A list of authorized IP addresses can be obtained by `GET`ing the endpoing.
+    A list of the form `{ [ { "ip" : "192.168.1.3"} , { "ip" : "1.1.1.1"} ] }` is
+    then returned.
+    - An IP address in the ACL can be modified by `PUT`/`PATCH`ing with JSON data
+    of the form `{ "old_ip" : "192.168.1.4", "ip" : "1.1.1.1" }`.
 
-What's working:
-- HTTP 200 (html/plain text)
-- IP address conversion from/to base10 integers (for use with the SIM card)
-- Parsing an initial IP address to add to the ACL from the tty, with a string of
-the form `"IPAddr=xxx.xxx.xxx.xxx"`, ending with a line feed (`'\n'`).
-
-TODO:
-- interface with the modem and the SIM
-- implement HTTP endpoints (HTTP->AT)
-- JSON all the things
+TODO
+----
+- clean up the existing code and properly handle errors
+- `/call/` endpoint
+- `/sms/` endpoint
 
 The tty is accessible with baud 115200. The server gets chatty when the macros
 `DEBUG` and `DEBUG_TEST` are defined.
@@ -22,10 +31,10 @@ Dependencies
 ------------
 
 - [ProDino MKR Zero](https://github.com/kmpelectronics/Arduino/tree/master/ProDinoMKRZero/releases)
-- [POST HTTP Parser](https://github.com/NatanBiesmans/Arduino-POST-HTTP-Parser) (not used at the moment, may have licensing problems)
+- [POST HTTP Parser](https://github.com/NatanBiesmans/Arduino-POST-HTTP-Parser) (may have licensing problems)
 - Ethernet2
+- ArduinoJson
 
 License
 -------
 MIT
-
