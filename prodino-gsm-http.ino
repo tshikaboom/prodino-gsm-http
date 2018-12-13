@@ -107,9 +107,9 @@ void setup_acl() {
   unsigned int i;
 
   /*
-   * Initialize the ACL array to 0.
-   * This serves as a sentinel value and an invalid IP.
-   */
+     Initialize the ACL array to 0.
+     This serves as a sentinel value and an invalid IP.
+  */
   for (i = 0; i < ACL_IP_MAX; i++) {
     current_acl[i] = 0;
   }
@@ -208,7 +208,7 @@ void HTTP200Json(EthernetClient client, String JsonBody)
   client.println(JsonBody);
 }
 
-
+String http_request("");
 
 void loop(void)
 {
@@ -219,22 +219,39 @@ void loop(void)
   // listen for incoming clients
   EthernetClient client = server.available();
   if (client) {
+    PostParser http_data = PostParser(client);
     aleat = random(100) % ARRAY_LEN;
 #ifdef DEBUG
-    Serial.print("new client aleat ");
+    Serial.print("new client IP ");
+    Serial.print(client.remoteIP());
+    Serial.print(" aleat ");
     Serial.println(aleat);
 #endif
     bool currentLineIsBlank = true;
     while (client.connected()) {
+
       if (client.available()) {
         char c = client.read();
-        //Serial.write(c);
+        http_request += c;
+        http_data.addHeaderCharacter(c);
         // if you've gotten to the end of the line (received a newline
         // character) and the line is blank, the http request has ended,
         // so you can send a reply
         if (c == '\n' && currentLineIsBlank) {
-          HTTP200Citation(client, aleat);
-          break;
+          if (http_request.indexOf("GET / ") != -1) {
+            HTTP200Citation(client, aleat);
+            http_request = "";
+            break;
+          }
+          else {
+            if (getContentType(http_data) == "application/json") {
+              http_data.grabPayload();
+              if (http_request.indexOf("/acl"))
+                http_acl_request(client, http_data);
+              break;
+            }
+          }
+
         }
         if (c == '\n') {
           // you're starting a new line
@@ -245,6 +262,9 @@ void loop(void)
         }
       }
     }
+    Serial.println(http_data.getHeader());
+    Serial.println(http_data.getPayload());
+
     // give the web browser time to receive the data
     delay(1);
     // close the connection:

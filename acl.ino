@@ -2,15 +2,11 @@
 
 extern uint32_t current_acl[ACL_IP_MAX];
 
-void refresh_acls() {
-  // Get IP addresses from SIM card and overwrite the current_acl array
-}
-
 void add_ip_to_acl(IPAddress ip) {
   // Add IP address to ACL
   add_acl_to_sim(ip_to_decimal(ip));
   // Refresh the list of allowed IPs in memory
-  refresh_acls();
+  overwrite_acl();
 }
 
 void print_acl() {
@@ -67,6 +63,20 @@ void parseIP() {
       }
     }
     new_data = false;
+  }
+}
+
+void http_acl_request(EthernetClient client, PostParser http_data) {
+#ifdef DEBUG
+  Serial.println("Going to parse some ACL data...");
+#endif
+  if (check_incoming_ip(client) == -1) {
+#ifdef DEBUG
+    Serial.print("Client ");
+    Serial.print(client.remoteIP());
+    Serial.println(" not in ACL.");
+#endif
+    return refuse_connection(client);
   }
 }
 

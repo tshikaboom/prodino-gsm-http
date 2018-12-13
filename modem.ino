@@ -77,6 +77,18 @@ void get_acl_from_sim() {
   modem_recvWithEndMarker();
 }
 
+void overwrite_acl() {
+  int i;
+
+  for (i = 0; i < ACL_IP_MAX; i++) {
+    if (current_acl[i])
+      break;
+
+    SerialGSM.println(String("AT+CPBW=") + i + "," + "\"" + current_acl[i] + "\"" + ",," + "\"" + "ACL" + "\"");
+    delay(100);
+  }
+}
+
 int add_acl_to_sim(uint32_t new_ip) {
   int i, index;
 
