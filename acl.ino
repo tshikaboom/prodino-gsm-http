@@ -32,6 +32,22 @@ void add_ip_to_acl(IPAddress ip) {
   overwrite_acl();
 }
 
+int replace_ip_in_acl(IPAddress old_ip, IPAddress new_ip) {
+  unsigned int i;
+  uint32_t old_ip_dec = ip_to_decimal(old_ip);
+
+  for (i = 0; i < ACL_IP_MAX; i++) {
+    if (current_acl[i] == old_ip_dec) {
+      current_acl[i] = ip_to_decimal(new_ip);
+      overwrite_acl();
+      return 0;
+    }
+  }
+  // Old IP address not found
+  return -1;
+
+}
+
 void print_acl() {
   int i;
 
@@ -109,6 +125,29 @@ void http_acl_get(EthernetClient client) {
   client.println("]}");
 }
 
+void http_acl_patch(EthernetClient client, PostParser http_data) {
+  StaticJsonBuffer<JSON_BUF_SIZE * 2> input_buffer;
+  JsonObject& root = input_buffer.parseObject(http_data.getPayload());
+  IPAddress old_ip, new_ip;
+
+  if (!root.success()) {
+#ifdef DEBUG
+    Serial.println("JSON parse failed!");
+#endif
+  }
+
+  const char* old_ip_value = root["old_ip"];
+  const char* new_ip_value = root["ip"];
+
+  if (old_ip.fromString(old_ip_value)) {
+    if (new_ip.fromString(new_ip_value)) {
+      if (replace_ip_in_acl(old_ip, new_ip) == 0) {
+        accept_connection(client);
+      }
+    }
+  }
+}
+
 void http_acl_post(EthernetClient client, PostParser http_data) {
   StaticJsonBuffer<JSON_BUF_SIZE> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
@@ -149,6 +188,13 @@ void http_acl_request(EthernetClient client, PostParser http_data) {
       http_acl_post(client, http_data);
       return;
     }
+    if ((http_data.getHeader().indexOf("PUT /acl") != -1) ||
+        (http_data.getHeader().indexOf("PATCH /acl") != -1)) {
+      http_acl_patch(client, http_data);
+      return;
+    }
+
+
   }
 }
 
