@@ -40,6 +40,13 @@ int check_incoming_ip(EthernetClient client) {
   return -1;
 }
 
+void accept_connection(EthernetClient client) {
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-Type: application/json");
+  client.println("Connection: close");
+  client.println();
+}
+
 void refuse_connection(EthernetClient client) {
   client.println("HTTP/1.1 403 Forbidden");
   client.println("Content-Type: text/html");

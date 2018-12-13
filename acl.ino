@@ -68,6 +68,26 @@ void parseIP() {
   }
 }
 
+void http_acl_get(EthernetClient client) {
+  unsigned int i;
+
+  client.print("{[");
+
+  for (i = 0; i < ACL_IP_MAX; i++) {
+    if (current_acl[i] == 0)
+      break;
+
+    if (i > 0)
+      client.print(",");
+
+    client.print("{\"ip\":\"");
+    client.print(decimal_to_ip_string(current_acl[i]));
+    client.print("\"}");
+  }
+
+  client.println("]}");
+}
+
 void http_acl_request(EthernetClient client, PostParser http_data) {
 #ifdef DEBUG
   Serial.println("Going to parse some ACL data...");
@@ -79,6 +99,12 @@ void http_acl_request(EthernetClient client, PostParser http_data) {
     Serial.println(" not in ACL.");
 #endif
     return refuse_connection(client);
+  }
+  else {
+    if (http_data.getHeader().indexOf("GET /acl") != -1) {
+      accept_connection(client);
+      http_acl_get(client);
+    }
   }
 }
 

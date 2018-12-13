@@ -7,6 +7,7 @@
 #include <KMPProDinoMKRZero.h>
 #include <KMPCommon.h>
 #include <DHT.h>
+#include <ArduinoJson.h>
 
 #define TINY_GSM_MODEM_UBLOX
 #include <TinyGsmClient.h>
@@ -88,7 +89,7 @@ int ip_to_decimal(IPAddress ip) {
   return a + b + c + d;
 }
 
-String decimal_to_ip_string(int ip) {
+String decimal_to_ip_string(unsigned int ip) {
   return String(((ip >> 24) & 0xFF)) + "."
          + String(((ip >> 16) & 0xFF)) + "."
          + String(((ip >> 8) & 0xFF)) + "."
