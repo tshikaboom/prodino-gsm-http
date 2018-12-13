@@ -1,12 +1,27 @@
 /* SPDX-License-Identifier: MIT */
 
 #include <KMPProDinoMKRZero.h>
+#include <ArduinoJson.h>
+
+#define JSON_BUF_SIZE 64
 
 extern uint32_t current_acl[ACL_IP_MAX];
 
 void add_ip_to_acl(IPAddress ip) {
+  unsigned int i;
   // Add IP address to ACL
-  add_acl_to_sim(ip_to_decimal(ip));
+
+  for (i = 0; i < ACL_IP_MAX; i++) {
+    if (current_acl[i] == 0)
+      break;
+  }
+  if (i < ACL_IP_MAX)
+    current_acl[i] = ip_to_decimal(ip);
+  else {
+    // error
+  }
+
+  //add_ip_to_acl(ip_to_decimal(ip));
   // Refresh the list of allowed IPs in memory
   overwrite_acl();
 }
@@ -88,6 +103,23 @@ void http_acl_get(EthernetClient client) {
   client.println("]}");
 }
 
+void http_acl_post(EthernetClient client, PostParser http_data) {
+  StaticJsonBuffer<JSON_BUF_SIZE> input_buffer;
+  JsonObject& root = input_buffer.parseObject(http_data.getPayload());
+
+  if (!root.success()) {
+#ifdef DEBUG
+    Serial.println("JSON parse failed!");
+#endif
+  }
+
+  const char* ip_value = root["ip"];
+  IPAddress ip;
+  if (ip.fromString(ip_value)) {
+    add_ip_to_acl(ip);
+  }
+}
+
 void http_acl_request(EthernetClient client, PostParser http_data) {
 #ifdef DEBUG
   Serial.println("Going to parse some ACL data...");
@@ -104,6 +136,12 @@ void http_acl_request(EthernetClient client, PostParser http_data) {
     if (http_data.getHeader().indexOf("GET /acl") != -1) {
       accept_connection(client);
       http_acl_get(client);
+      return;
+    }
+    if (http_data.getHeader().indexOf("POST /acl") != -1) {
+      accept_connection(client);
+      http_acl_post(client, http_data);
+      return;
     }
   }
 }

@@ -90,24 +90,6 @@ void overwrite_acl() {
   }
 }
 
-int add_acl_to_sim(uint32_t new_ip) {
-  int i, index;
-
-  for (i = 0; i < ACL_IP_MAX; i++) {
-    if (current_acl[i] == 0) {
-      index = i;
-      index++;
-      break;
-    }
-  }
-  Serial.println(String("AT+CPBW=") + index + "," + "\"" + new_ip + "\"" + ",," + "\"" + "ACL" + "\"");
-  SerialGSM.println(String("AT+CPBW=") + index + "," + "\"" + new_ip + "\"" + ",," + "\"" + "ACL" + "\"");
-  delay(100);
-#ifdef DEBUG
-  Serial.println(SerialGSM.readString());
-#endif
-}
-
 void setup_modem() {
   pinMode(GSM_DTR, OUTPUT);
   digitalWrite(GSM_DTR, LOW);
