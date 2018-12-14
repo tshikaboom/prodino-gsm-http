@@ -7,7 +7,7 @@
 
 extern uint32_t current_acl[ACL_IP_MAX];
 
-void add_ip_to_acl(IPAddress ip) {
+int add_ip_to_acl(IPAddress ip) {
   unsigned int i;
   uint32_t ip_decimal = ip_to_decimal(ip);
   // Add IP address to ACL
@@ -15,7 +15,7 @@ void add_ip_to_acl(IPAddress ip) {
   for (i = 0; i < ACL_IP_MAX; i++) {
     // Nothing to do, IP already exists in ACL
     if (current_acl[i] == ip_decimal)
-      return;
+      return -EEXIST;
 
     // Found a free slot
     if (current_acl[i] == 0)
@@ -24,12 +24,15 @@ void add_ip_to_acl(IPAddress ip) {
   if (i < ACL_IP_MAX)
     current_acl[i] = ip_decimal;
   else {
-    // error
+    return -ENOSPC;
   }
 
   //add_ip_to_acl(ip_to_decimal(ip));
   // Refresh the list of allowed IPs in memory
   overwrite_acl();
+
+  // if we got up to here, we probably succeeded
+  return 0;
 }
 
 int replace_ip_in_acl(IPAddress old_ip, IPAddress new_ip) {
@@ -60,6 +63,7 @@ void print_acl() {
 
 // Parse
 void parseIP() {
+  int ret;
   int index_equals = -1;
   IPAddress ip;
   if (new_data == true) {
@@ -74,7 +78,13 @@ void parseIP() {
           Serial.print("New IP going to be added: ");
           Serial.println(ip);
 #endif
-          add_ip_to_acl(ip);
+          ret = add_ip_to_acl(ip);
+          if (ret < 0) {
+#ifdef DEBUG
+            Serial.print("Adding IP to ACL failed with errno ");
+            Serial.println(ret);
+#endif
+          }
           // test if IP address gets converted well
 #ifdef DEBUG_TEST
           unsigned int ip_decimal = ip_to_decimal(ip);

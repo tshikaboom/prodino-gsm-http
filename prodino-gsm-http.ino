@@ -8,6 +8,7 @@
 #include <KMPCommon.h>
 #include <DHT.h>
 #include <ArduinoJson.h>
+#include <errno.h>
 
 #define TINY_GSM_MODEM_UBLOX
 #include <TinyGsmClient.h>
