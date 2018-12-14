@@ -106,8 +106,8 @@ String endpoints[] = {
 };
 
 // Helper functions to manipulate IP addresses
-int ip_to_decimal(IPAddress ip) {
-  int a = ip[0], b = ip[1], c = ip[2], d = ip[3];
+uint32_t ip_to_decimal(IPAddress ip) {
+  uint32_t a = ip[0], b = ip[1], c = ip[2], d = ip[3];
 
   a <<= 24;
   b <<= 16;
