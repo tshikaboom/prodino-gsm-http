@@ -21,7 +21,17 @@
 // Used to test stuff
 #define DEBUG_TEST
 
+#ifdef DEBUG
 
+#define PR_DEBUG(x) Serial.print(x)
+#define PR_DEBUGLN(x) Serial.println(x)
+
+#else
+
+#define PR_DEBUG(x)
+#define PR_DEBUGLN(x)
+
+#endif // #ifdef DEBUG
 
 #include <BlynkSimpleEthernet2.h>
 
@@ -135,16 +145,12 @@ void setup_acl() {
 
 
 void setup_ethernet() {
-#ifdef DEBUG
-  Serial.write("begin ethernet..");
-#endif
+  PR_DEBUG("begin ethernet..");
 
   Ethernet.begin(mac);
 
-#ifdef DEBUG
-  Serial.write(" got IP addr ");
-  Serial.println(Ethernet.localIP());
-#endif
+  PR_DEBUG(" got IP addr ");
+  PR_DEBUGLN(Ethernet.localIP());
 }
 
 
@@ -154,6 +160,8 @@ void setup()
   Serial.begin(115200);
   while (!Serial) {
   }
+
+  PR_DEBUGLN("Booting up...");
 
   // Init Dino board. Set pins, start W5500.
   KMPProDinoMKRZero.init(ProDino_MKR_Zero_Ethernet);
@@ -237,12 +245,10 @@ void loop(void)
   if (client) {
     PostParser http_data = PostParser(client);
     aleat = random(100) % ARRAY_LEN;
-#ifdef DEBUG
-    Serial.print("new client IP ");
-    Serial.print(client.remoteIP());
-    Serial.print(" aleat ");
-    Serial.println(aleat);
-#endif
+    PR_DEBUG("new client IP ");
+    PR_DEBUG(client.remoteIP());
+    PR_DEBUG(" aleat ");
+    PR_DEBUGLN(aleat);
     bool currentLineIsBlank = true;
     while (client.connected()) {
       if (client.available()) {
@@ -274,13 +280,13 @@ void loop(void)
         }
       }
     }
-    Serial.println(http_data.getHeader());
-    Serial.println(http_data.getPayload());
+    PR_DEBUGLN(http_data.getHeader());
+    PR_DEBUGLN(http_data.getPayload());
 
     // give the web browser time to receive the data
     delay(1);
     // close the connection:
     client.stop();
-    Serial.println("client disconnected");
+    PR_DEBUGLN("client disconnected");
   }
 }

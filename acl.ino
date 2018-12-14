@@ -55,7 +55,7 @@ void print_acl() {
   int i;
 
   for (i = 0; i < ACL_IP_MAX; i++) {
-    Serial.println(current_acl[i]);
+    PR_DEBUGLN(current_acl[i]);
     if (current_acl[i] == 0)
       break;
   }
@@ -74,41 +74,33 @@ void parseIP() {
       if (index_equals != -1) {
 
         if (ip.fromString(s.substring(index_equals + 1))) {
-#ifdef DEBUG
-          Serial.print("New IP going to be added: ");
-          Serial.println(ip);
-#endif
+          PR_DEBUG("New IP going to be added: ");
+          PR_DEBUGLN(ip);
           ret = add_ip_to_acl(ip);
           if (ret < 0) {
-#ifdef DEBUG
-            Serial.print("Adding IP to ACL failed with errno ");
-            Serial.println(ret);
-#endif
+            PR_DEBUG("Adding IP to ACL failed with errno ");
+            PR_DEBUGLN(ret);
           }
           // test if IP address gets converted well
 #ifdef DEBUG_TEST
           unsigned int ip_decimal = ip_to_decimal(ip);
-          Serial.print("Testing IP ");
-          Serial.print(ip);
-          Serial.print(" to decimal ");
-          Serial.print(ip_decimal);
-          Serial.print(" back to IP ");
-          Serial.println(decimal_to_ip_string(ip_decimal));
+          PR_DEBUG("Testing IP ");
+          PR_DEBUG(ip);
+          PR_DEBUG(" to decimal ");
+          PR_DEBUG(ip_decimal);
+          PR_DEBUG(" back to IP ");
+          PR_DEBUGLN(decimal_to_ip_string(ip_decimal));
 #endif
 
         }
         else {
-#ifdef DEBUG
-          Serial.println("Bad IP address format");
-#endif
+          PR_DEBUGLN("Bad IP address format");
         }
 
 
       } else {
-#ifdef DEBUG
-        Serial.print("Would like a string like \"IPAddr=xxx.xxx.xxx.xxx\", got ");
-        Serial.println(s);
-#endif
+        PR_DEBUG("Would like a string like \"IPAddr=xxx.xxx.xxx.xxx\", got ");
+        PR_DEBUGLN(s);
       }
     }
     new_data = false;
@@ -141,9 +133,7 @@ void http_acl_patch(EthernetClient client, PostParser http_data) {
   IPAddress old_ip, new_ip;
 
   if (!root.success()) {
-#ifdef DEBUG
-    Serial.println("JSON parse failed!");
-#endif
+    PR_DEBUGLN("JSON parse failed!");
   }
 
   const char* old_ip_value = root["old_ip"];
@@ -163,9 +153,7 @@ void http_acl_post(EthernetClient client, PostParser http_data) {
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
 
   if (!root.success()) {
-#ifdef DEBUG
-    Serial.println("JSON parse failed!");
-#endif
+    PR_DEBUGLN("JSON parse failed!");
   }
 
   const char* ip_value = root["ip"];
@@ -176,15 +164,11 @@ void http_acl_post(EthernetClient client, PostParser http_data) {
 }
 
 void http_acl_request(EthernetClient client, PostParser http_data) {
-#ifdef DEBUG
-  Serial.println("Going to parse some ACL data...");
-#endif
+  PR_DEBUGLN("Going to parse some ACL data...");
   if (check_incoming_ip(client) == -1) {
-#ifdef DEBUG
-    Serial.print("Client ");
-    Serial.print(client.remoteIP());
-    Serial.println(" not in ACL.");
-#endif
+    PR_DEBUG("Client ");
+    PR_DEBUG(client.remoteIP());
+    PR_DEBUGLN(" not in ACL.");
     return refuse_connection(client);
   }
   else {
