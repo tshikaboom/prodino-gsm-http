@@ -225,8 +225,6 @@ void HTTP200Json(EthernetClient client, String JsonBody)
   client.println(JsonBody);
 }
 
-String http_request("");
-
 void loop(void)
 {
   long aleat;
@@ -246,28 +244,24 @@ void loop(void)
 #endif
     bool currentLineIsBlank = true;
     while (client.connected()) {
-
       if (client.available()) {
         char c = client.read();
-        http_request += c;
         http_data.addHeaderCharacter(c);
         // if you've gotten to the end of the line (received a newline
         // character) and the line is blank, the http request has ended,
         // so you can send a reply
         if (c == '\n' && currentLineIsBlank) {
-          if (http_request.indexOf("GET / ") != -1) {
+          if (http_data.getHeader().indexOf("GET / ") != -1) {
             HTTP200Citation(client, aleat);
-            http_request = "";
             break;
           }
-          else {
-            if (getContentType(http_data) == "application/json") {
-              http_data.grabPayload();
-              if (http_request.indexOf("/acl"))
-                http_acl_request(client, http_data);
-              break;
-            }
+
+          if (getContentType(http_data) == "application/json") {
+            if (http_data.getHeader().indexOf("/acl"))
+              http_acl_request(client, http_data);
+            break;
           }
+
 
         }
         if (c == '\n') {

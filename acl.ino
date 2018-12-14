@@ -184,12 +184,14 @@ void http_acl_request(EthernetClient client, PostParser http_data) {
       return;
     }
     if (http_data.getHeader().indexOf("POST /acl") != -1) {
+      http_data.grabPayload();
       accept_connection(client);
       http_acl_post(client, http_data);
       return;
     }
     if ((http_data.getHeader().indexOf("PUT /acl") != -1) ||
         (http_data.getHeader().indexOf("PATCH /acl") != -1)) {
+      http_data.grabPayload();
       http_acl_patch(client, http_data);
       return;
     }
