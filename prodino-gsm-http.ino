@@ -45,7 +45,7 @@ const char PINNUMBER[] = "1234";
 // APN
 const char GPRS_APN[] = "Free";
 
-#define ARRAY_LEN 9
+#define ARRAY_LEN 17
 
 String citation[ARRAY_LEN] = {
   "Qui vole un boeuf est vachement musclé.",
@@ -56,7 +56,15 @@ String citation[ARRAY_LEN] = {
   "La vitamine C... mais elle ne dira rien.",
   "Bon je vous laisse, je vais faire une machine !",
   "Donner c'est donner et repeindre ses volets.",
-  "Qui fait pipi contre le vent, ... se rince les dents"
+  "Qui fait pipi contre le vent, ... se rince les dents",
+  "Si t'es fière d'être Blanche Neige, tape dans tes nains.",
+  "Noël au balcon, enrhumé comme un con.",
+  "Qui pisse loin ménage ses pompes.",
+  "Plus il y de fous, moins il y a de riz !",
+  "Chassez le naturiste il revient au bungalow.",
+  "Quand tu marches vers le Nord, tu as le sudoku.",
+  "Vous ne m'avez pas cru, vous m'aurez cuite !",
+  "Elle a frit, elle a tout compris!"
 };
 
 String auteur[ARRAY_LEN] = {
@@ -68,7 +76,15 @@ String auteur[ARRAY_LEN] = {
   "- Frank Columbo",
   "- Leonard de Vinci",
   "- Alfred Hitchcock",
-  "- Lao Tseu"
+  "- Lao Tseu",
+  "- Mimi Mathy",
+  "- Pamela Anderson",
+  "- Christian Louboutin",
+  "- Nicolas Fonsat",
+  "- Dominique Strauss-Kahn",
+  "- Sun Tzu",
+  "- Jeanne d'Arc",
+  "- Jeanne d'Arc"
 };
 
 // List of endpoints (not used at the moment)
