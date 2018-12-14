@@ -7,7 +7,7 @@ extern unsigned int gsm_modem_rate;
 
 
 void parse_contact() {
-  int index, index2, i;
+  int index, i;
   if (new_data == true) {
     String s = String(received_chars);
     s.trim();
@@ -71,7 +71,6 @@ void modem_recvWithEndMarker() {
 
 
 void get_acl_from_sim() {
-  bool more_data;
   SerialGSM.println("AT+CPBF=\"ACL\"");
   delay(100);
 

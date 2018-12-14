@@ -14,8 +14,8 @@ void add_ip_to_acl(IPAddress ip) {
 
   for (i = 0; i < ACL_IP_MAX; i++) {
     // Nothing to do, IP already exists in ACL
-    if (current_acl[i] == ip_decimal);
-    return;
+    if (current_acl[i] == ip_decimal)
+      return;
 
     // Found a free slot
     if (current_acl[i] == 0)
