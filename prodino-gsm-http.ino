@@ -118,6 +118,8 @@ void loop(void)
   recvWithEndMarker();
   parseIP();
 
+  Ethernet.maintain();
+
   // listen for incoming clients
   EthernetClient client = server.available();
   if (client) {
