@@ -25,6 +25,9 @@
 // SIM card APN defined as a string
 #define CONFIG_SIM_APN "Free"
 
+// Used to instantiate a buffer to read from serial
+#define CONFIG_SERIAL_BUF_SIZE 64
+
 /*
  * This is used as a key to get an authorized IP from serial.
  * You can then send "<key>=<valid_ipv4_address>" to the serial port to add

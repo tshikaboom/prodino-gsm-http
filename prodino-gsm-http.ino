@@ -26,7 +26,7 @@ uint32_t current_acl[ACL_IP_MAX];
 const char ip_key[] = CONFIG_IP_STRING;
 
 // Buffer size used to read from serial
-#define SERIAL_BUF_SIZE 64
+#define SERIAL_BUF_SIZE CONFIG_SERIAL_BUF_SIZE
 
 // SIM PIN
 const char PINNUMBER[] = CONFIG_SIM_PIN;
