@@ -148,19 +148,22 @@ void http_acl_patch(EthernetClient client, PostParser http_data) {
   }
 }
 
-void http_acl_post(EthernetClient client, PostParser http_data) {
+int http_acl_post(EthernetClient client, PostParser http_data) {
   StaticJsonBuffer<JSON_BUF_SIZE> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
 
   if (!root.success()) {
     PR_DEBUGLN("JSON parse failed!");
+    return -EINVAL;
   }
 
   const char* ip_value = root["ip"];
   IPAddress ip;
   if (ip.fromString(ip_value)) {
     add_ip_to_acl(ip);
+    return 0;
   }
+  else return -EINVAL;
 }
 
 void http_acl_request(EthernetClient client, PostParser http_data) {
