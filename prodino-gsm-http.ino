@@ -41,9 +41,6 @@ String endpoints[] = {
   "/acl"
 };
 
-TinyGsm modem(SerialGSM);
-unsigned int gsm_modem_rate = 0;
-
 void setup_acl() {
   unsigned int i;
 

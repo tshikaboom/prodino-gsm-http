@@ -4,9 +4,10 @@
 
 #include <TinyGsmClient.h>
 
-extern unsigned int gsm_modem_rate;
-
 #define STRING_QUOTE(x) String("\"") + x + "\""
+
+TinyGsm modem(SerialGSM);
+unsigned int gsm_modem_rate = 0;
 
 void parse_contact() {
   int index, i;
