@@ -34,10 +34,10 @@ int check_incoming_ip(EthernetClient client) {
       return 0;
     // end of ACL, client not in ACL
     if (current_acl[i] == 0)
-      return -1;
+      return -ENOENT;
   }
   // ACL full, but client's IP not in it
-  return -1;
+  return -ENOENT;
 }
 
 void accept_connection(EthernetClient client) {
