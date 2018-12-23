@@ -17,22 +17,22 @@
 #include <postParser.h>
 
 EthernetServer server(80);
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+byte mac[] = CONFIG_ETHERNET_MAC;
 
 // ACL containing allowed IP addresses, in uint32_t's
 uint32_t current_acl[ACL_IP_MAX];
 
 // String used to get an IP address from the tty
-const char ip_key[] = "IPAddr";
+const char ip_key[] = CONFIG_IP_STRING;
 
 // Buffer size used to read from serial
 #define SERIAL_BUF_SIZE 64
 
 // SIM PIN
-const char PINNUMBER[] = "1234";
+const char PINNUMBER[] = CONFIG_SIM_PIN;
 
 // APN
-const char GPRS_APN[] = "Free";
+const char GPRS_APN[] = CONFIG_SIM_APN;
 
 // List of endpoints (not used at the moment)
 String endpoints[] = {

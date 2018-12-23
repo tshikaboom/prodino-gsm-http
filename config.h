@@ -20,7 +20,21 @@
 // Max number of IPs in the ACL
 #define ACL_IP_MAX 32
 
+// SIM card PIN number as a string
+#define CONFIG_SIM_PIN "1234"
 
+// SIM card APN defined as a string
+#define CONFIG_SIM_APN "Free"
+
+/*
+ * This is used as a key to get an authorized IP from serial.
+ * You can then send "<key>=<valid_ipv4_address>" to the serial port to add
+ * an initial IP address to the ACL.
+ */
+#define CONFIG_IP_STRING "IPAddr"
+
+// Ethernet PHY MAC address.
+#define CONFIG_ETHERNET_MAC { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }
 
 /* If unused, lots of strings don't get compiled in */
 #ifdef DEBUG
