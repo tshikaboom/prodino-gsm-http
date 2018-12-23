@@ -4,7 +4,6 @@
 
 #include <TinyGsmClient.h>
 
-#define STRING_QUOTE(x) String("\"") + x + "\""
 
 TinyGsm modem(SerialGSM);
 unsigned int gsm_modem_rate = 0;

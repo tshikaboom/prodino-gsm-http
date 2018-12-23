@@ -6,7 +6,6 @@
 // This is our modem identifier. Needed by TinyGsm.
 #define TINY_GSM_MODEM_UBLOX
 
-
 // define this to make the server chatty
 #define DEBUG
 
@@ -48,6 +47,14 @@
 #define PR_DEBUGLN(x)
 
 #endif // DEBUG
+
+
+/*
+ * Helper to lazily get a string of the form ""x"".
+ * The instantiation with String() lets us append other strings to this with
+ * the + operator.
+ */
+#define STRING_QUOTE(x) String("\"") + x + "\""
 
 
 #endif // CONFIG_H
