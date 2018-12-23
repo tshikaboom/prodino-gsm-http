@@ -5,12 +5,15 @@
 
 extern unsigned int gsm_modem_rate;
 
+#define STRING_QUOTE(x) String("\"") + x + "\""
 
 void parse_contact() {
   int index, i;
   if (new_data == true) {
+    // create a string for ease of use
     String s = String(received_chars);
     s.trim();
+
     if (s[0] == '+') {
       PR_DEBUGLN("Got this string from SIM:");
       PR_DEBUGLN(s);
@@ -79,7 +82,7 @@ void overwrite_acl() {
     if (current_acl[i] == 0)
       break;
 
-    SerialGSM.println(String("AT+CPBW=") + i + "," + "\"" + current_acl[i] + "\"" + ",," + "\"" + "ACL" + "\"");
+    SerialGSM.println(String("AT+CPBW=") + i + "," + STRING_QUOTE(current_acl[i]) + ",," + STRING_QUOTE("ACL"));
     delay(100);
   }
 }
