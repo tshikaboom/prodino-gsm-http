@@ -44,29 +44,6 @@ String endpoints[] = {
   "/acl"
 };
 
-// Helper functions to manipulate IP addresses
-uint32_t ip_to_decimal(IPAddress ip) {
-  uint32_t a = ip[0], b = ip[1], c = ip[2], d = ip[3];
-
-  a <<= 24;
-  b <<= 16;
-  c <<= 8;
-
-  return a + b + c + d;
-}
-
-String decimal_to_ip_string(unsigned int ip) {
-  return String(((ip >> 24) & 0xFF)) + "."
-         + String(((ip >> 16) & 0xFF)) + "."
-         + String(((ip >> 8) & 0xFF)) + "."
-         + String((ip & 0xFF));
-}
-
-IPAddress decimal_to_ip(int ip) {
-  IPAddress ip_addr;
-  return ip_addr.fromString(decimal_to_ip_string(ip));
-}
-
 TinyGsm modem(SerialGSM);
 unsigned int gsm_modem_rate = 0;
 
