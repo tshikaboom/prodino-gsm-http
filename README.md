@@ -4,7 +4,7 @@ ProDino GSM HTTP miniserver
 Features
 --------
 - Serves real citations from famous people to a web browser pointed to the
-board's IP address.
+board's IP address. This is configurable by (un)defining `CONFIG_CITATION`.
 - Support for a basic access control list. IP addresses not in the ACL trying to
 access the `/acl` endpoint currently get a HTTP 403 reply. The ACL is saved on
 the SIM card.
@@ -20,20 +20,24 @@ the SIM card.
 
 TODO
 ----
-- clean up the existing code and properly handle errors
+- properly handle errors
 - `/call/` endpoint
 - `/sms/` endpoint
 
-The tty is accessible with baud 115200. The server gets chatty when the macros
-`DEBUG` and `DEBUG_TEST` are defined.
+The tty is accessible with baud 115200. There's lots of configuration options
+available in `config.h`. The server gets chatty when the macros `DEBUG` and
+`DEBUG_TEST` are defined.
 
 Dependencies
 ------------
 
 - [ProDino MKR Zero](https://github.com/kmpelectronics/Arduino/tree/master/ProDinoMKRZero/releases)
 - [POST HTTP Parser](https://github.com/NatanBiesmans/Arduino-POST-HTTP-Parser) (may have licensing problems)
-- Ethernet2
+- Ethernet2: would like to get rid of this, needs some modifications in POST
+HTTP Parser and the MKR Zero libraries. Upstream Ethernet.h seems to be working
+with these libraries.
 - ArduinoJson
+- TinyGsm
 
 License
 -------
