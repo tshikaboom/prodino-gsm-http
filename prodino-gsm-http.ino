@@ -201,8 +201,13 @@ void recvWithEndMarker() {
 
 
 
-void HTTP200Citation(EthernetClient client, long random)
+void HTTP200Citation(EthernetClient client)
 {
+  long rand = random(100) % ARRAY_LEN;
+
+  PR_DEBUG("Serving citation #");
+  PR_DEBUGLN(rand);
+
   // send a standard http response header
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: text/html");
@@ -215,9 +220,9 @@ void HTTP200Citation(EthernetClient client, long random)
   client.println("<meta charset=\"utf-8\">");
   client.println("</head>");
 
-  client.println(citation[random]);
+  client.println(citation[rand]);
   client.println("<br />");
-  client.println(auteur[random]);
+  client.println(auteur[rand]);
 
   client.println("<br />");
   client.println("</html>");
@@ -234,7 +239,6 @@ void HTTP200Json(EthernetClient client, String JsonBody)
 
 void loop(void)
 {
-  long aleat;
   recvWithEndMarker();
   parseIP();
 
@@ -242,11 +246,8 @@ void loop(void)
   EthernetClient client = server.available();
   if (client) {
     PostParser http_data = PostParser(client);
-    aleat = random(100) % ARRAY_LEN;
     PR_DEBUG("new client IP ");
-    PR_DEBUG(client.remoteIP());
-    PR_DEBUG(" aleat ");
-    PR_DEBUGLN(aleat);
+    PR_DEBUGLN(client.remoteIP());
     bool currentLineIsBlank = true;
     while (client.connected()) {
       if (client.available()) {
@@ -257,7 +258,7 @@ void loop(void)
         // so you can send a reply
         if (c == '\n' && currentLineIsBlank) {
           if (http_data.getHeader().indexOf("GET / ") != -1) {
-            HTTP200Citation(client, aleat);
+            HTTP200Citation(client);
             break;
           }
 
