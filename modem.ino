@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 
-#define TINY_GSM_MODEM_UBLOX
+#include "config.h"
+
 #include <TinyGsmClient.h>
 
 extern unsigned int gsm_modem_rate;

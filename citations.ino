@@ -1,5 +1,9 @@
 /* SPDX-License-Identifier: MIT */
 
+#include "config.h"
+
+#ifdef CONFIG_CITATION
+
 #define ARRAY_LEN 17
 
 String citation[ARRAY_LEN] = {
@@ -70,3 +74,4 @@ void HTTP200Citation(EthernetClient client)
   client.println("</html>");
 }
 
+#endif // CONFIG_CITATION

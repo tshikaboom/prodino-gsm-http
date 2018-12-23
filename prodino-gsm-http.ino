@@ -3,6 +3,8 @@
 /* Initial working version featuring some real citations from famous people
 
 */
+#include "config.h"
+
 
 #include <KMPProDinoMKRZero.h>
 #include <KMPCommon.h>
@@ -10,28 +12,9 @@
 #include <ArduinoJson.h>
 #include <errno.h>
 
-#define TINY_GSM_MODEM_UBLOX
 #include <TinyGsmClient.h>
 /* https://github.com/NatanBiesmans/Arduino-POST-HTTP-Parser */
 #include <postParser.h>
-
-// Serial prints
-#define DEBUG
-
-// Used to test stuff
-#define DEBUG_TEST
-
-#ifdef DEBUG
-
-#define PR_DEBUG(x) Serial.print(x)
-#define PR_DEBUGLN(x) Serial.println(x)
-
-#else
-
-#define PR_DEBUG(x)
-#define PR_DEBUGLN(x)
-
-#endif // #ifdef DEBUG
 
 EthernetServer server(80);
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
@@ -186,10 +169,12 @@ void loop(void)
         // character) and the line is blank, the http request has ended,
         // so you can send a reply
         if (c == '\n' && currentLineIsBlank) {
+#ifdef CONFIG_CITATION
           if (http_data.getHeader().indexOf("GET / ") != -1) {
             HTTP200Citation(client);
             break;
           }
+#endif // CONFIG_CITATION
 
           if (getContentType(http_data) == "application/json") {
             if (http_data.getHeader().indexOf("/acl"))

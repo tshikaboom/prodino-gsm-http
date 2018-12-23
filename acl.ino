@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: MIT */
+#include "config.h"
 
 #include <KMPProDinoMKRZero.h>
 #include <ArduinoJson.h>

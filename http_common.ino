@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 
+#include "config.h"
 #include <postParser.h>
 
 // this code blatantly stolen from HTTP POST parser's private functions
