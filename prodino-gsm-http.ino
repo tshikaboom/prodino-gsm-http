@@ -34,13 +34,6 @@ const char PINNUMBER[] = CONFIG_SIM_PIN;
 // APN
 const char GPRS_APN[] = CONFIG_SIM_APN;
 
-// List of endpoints (not used at the moment)
-String endpoints[] = {
-  "/call/",
-  "/sms/",
-  "/acl"
-};
-
 void setup_acl() {
   unsigned int i;
 
