@@ -19,9 +19,6 @@
 EthernetServer server(80);
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 
-// Max number of IPs in the ACL
-#define ACL_IP_MAX 32
-
 // ACL containing allowed IP addresses, in uint32_t's
 uint32_t current_acl[ACL_IP_MAX];
 

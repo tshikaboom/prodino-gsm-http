@@ -17,6 +17,11 @@
 // define this to get some citations with the browser
 #define  CONFIG_CITATION
 
+// Max number of IPs in the ACL
+#define ACL_IP_MAX 32
+
+
+
 /* If unused, lots of strings don't get compiled in */
 #ifdef DEBUG
 
