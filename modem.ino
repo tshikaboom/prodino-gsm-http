@@ -45,13 +45,13 @@ void parse_contact() {
 // Receive a string of maximum size SERIAL_BUF_SIZE, ending with a '\n'
 void modem_recvWithEndMarker() {
   static byte idx = 0;
-  char endMarker = '\n', endMarker2 = '\n';
+  char endMarker = '\n';
   char rc;
 
   while (SerialGSM.available()) {
     for (idx = 0; idx < SERIAL_BUF_SIZE - 1; idx++) {
       rc = SerialGSM.read();
-      if (rc != endMarker || rc != endMarker2) {
+      if (rc != endMarker) {
         received_chars[idx] = rc;
       }
       else {
