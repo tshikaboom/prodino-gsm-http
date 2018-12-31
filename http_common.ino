@@ -40,9 +40,9 @@ uint32_t ip_to_decimal(IPAddress ip) {
 
 String decimal_to_ip_string(unsigned int ip) {
   return String(((ip >> 24) & 0xFF)) + "."
-         + String(((ip >> 16) & 0xFF)) + "."
-         + String(((ip >> 8) & 0xFF)) + "."
-         + String((ip & 0xFF));
+         + ((ip >> 16) & 0xFF) + "."
+         + ((ip >> 8) & 0xFF) + "."
+         + (ip & 0xFF);
 }
 
 IPAddress decimal_to_ip(int ip) {
