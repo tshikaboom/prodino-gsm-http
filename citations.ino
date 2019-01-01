@@ -59,7 +59,7 @@ void HTTP200Citation(EthernetClient client)
   client.println("Content-Type: text/html");
   client.println("Connection: close");  // the connection will be closed after completion of the response
   client.println("Refresh: 5");  // refresh the page automatically every 5 sec
-  client.println();
+  client.print("\r\n");
   client.println("<!DOCTYPE HTML>");
   client.println("<html>");
   client.println("<head>");
