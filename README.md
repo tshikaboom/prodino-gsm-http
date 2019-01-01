@@ -23,6 +23,8 @@ TODO
 - properly handle errors
 - `/call/` endpoint
 - `/sms/` endpoint
+- Document everything
+- Move as much Strings as possible to char arrays
 
 The tty is accessible with baud 115200. There's lots of configuration options
 available in `config.h`. The server gets chatty when the macros `DEBUG` and
