@@ -111,21 +111,23 @@ void parseIP() {
 void http_acl_get(EthernetClient client) {
   unsigned int i;
 
-  client.print("{[");
+  strcat(current_response.body, "{[");
 
   for (i = 0; i < ACL_IP_MAX; i++) {
     if (current_acl[i] == 0)
       break;
 
     if (i > 0)
-      client.print(",");
+      strcat(current_response.body, ",");
 
-    client.print("{\"ip\":\"");
-    client.print(decimal_to_ip_string(current_acl[i]));
-    client.print("\"}");
+    strcat(current_response.body, "{\"ip\":\"");
+    strcat(current_response.body, decimal_to_ip_string(current_acl[i]).c_str());
+    strcat(current_response.body, "\"}");
   }
 
-  client.println("]}");
+  strcat(current_response.body, "]}");
+
+  current_response.value = 0;
 }
 
 void http_acl_patch(EthernetClient client, PostParser http_data) {
@@ -135,6 +137,7 @@ void http_acl_patch(EthernetClient client, PostParser http_data) {
 
   if (!root.success()) {
     PR_DEBUGLN("JSON parse failed!");
+    current_response.value = -EINVAL;
   }
 
   const char* old_ip_value = root["old_ip"];
@@ -143,47 +146,53 @@ void http_acl_patch(EthernetClient client, PostParser http_data) {
   if (old_ip.fromString(old_ip_value)) {
     if (new_ip.fromString(new_ip_value)) {
       if (replace_ip_in_acl(old_ip, new_ip) == 0) {
-        accept_connection(client);
+        current_response.value = 0;
       }
     }
   }
+
+  current_response.value = -EINVAL;
 }
 
-int http_acl_post(EthernetClient client, PostParser http_data) {
+void http_acl_post(EthernetClient client, PostParser http_data) {
   StaticJsonBuffer<JSON_BUF_SIZE> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
 
   if (!root.success()) {
     PR_DEBUGLN("JSON parse failed!");
-    return -EINVAL;
+    current_response.value = -EINVAL;
   }
 
   const char* ip_value = root["ip"];
   IPAddress ip;
   if (ip.fromString(ip_value)) {
     add_ip_to_acl(ip);
-    return 0;
+    current_response.value = 0;
   }
-  else return -EINVAL;
+  else current_response.value = -EINVAL;
 }
 
 void http_acl_request(EthernetClient client, PostParser http_data) {
   if (http_data.getHeader().indexOf("GET /acl") != -1) {
-    accept_connection(client);
     http_acl_get(client);
-    return;
   }
   if (http_data.getHeader().indexOf("POST /acl") != -1) {
     http_data.grabPayload();
-    accept_connection(client);
     http_acl_post(client, http_data);
-    return;
   }
   if ((http_data.getHeader().indexOf("PUT /acl") != -1) ||
       (http_data.getHeader().indexOf("PATCH /acl") != -1)) {
     http_data.grabPayload();
     http_acl_patch(client, http_data);
-    return;
+  }
+
+  switch (current_response.value) {
+    case 0:
+      accept_connection(client);
+      break;
+    default:
+      error_connection(client);
+      break;
   }
 }
 
