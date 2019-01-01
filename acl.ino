@@ -168,33 +168,22 @@ int http_acl_post(EthernetClient client, PostParser http_data) {
 }
 
 void http_acl_request(EthernetClient client, PostParser http_data) {
-  PR_DEBUGLN("Going to parse some ACL data...");
-  if (check_incoming_ip(client) == -1) {
-    PR_DEBUG("Client ");
-    PR_DEBUG(client.remoteIP());
-    PR_DEBUGLN(" not in ACL.");
-    return refuse_connection(client);
+  if (http_data.getHeader().indexOf("GET /acl") != -1) {
+    accept_connection(client);
+    http_acl_get(client);
+    return;
   }
-  else {
-    if (http_data.getHeader().indexOf("GET /acl") != -1) {
-      accept_connection(client);
-      http_acl_get(client);
-      return;
-    }
-    if (http_data.getHeader().indexOf("POST /acl") != -1) {
-      http_data.grabPayload();
-      accept_connection(client);
-      http_acl_post(client, http_data);
-      return;
-    }
-    if ((http_data.getHeader().indexOf("PUT /acl") != -1) ||
-        (http_data.getHeader().indexOf("PATCH /acl") != -1)) {
-      http_data.grabPayload();
-      http_acl_patch(client, http_data);
-      return;
-    }
-
-
+  if (http_data.getHeader().indexOf("POST /acl") != -1) {
+    http_data.grabPayload();
+    accept_connection(client);
+    http_acl_post(client, http_data);
+    return;
+  }
+  if ((http_data.getHeader().indexOf("PUT /acl") != -1) ||
+      (http_data.getHeader().indexOf("PATCH /acl") != -1)) {
+    http_data.grabPayload();
+    http_acl_patch(client, http_data);
+    return;
   }
 }
 

@@ -134,9 +134,17 @@ void loop(void)
 #endif // CONFIG_CITATION
 
           if (getContentType(http_data) == "application/json") {
-            if (http_data.getHeader().indexOf("/acl"))
+            PR_DEBUGLN("Going to parse some ACL data...");
+            if (check_incoming_ip(client) == -1) {
+              PR_DEBUG("Client ");
+              PR_DEBUG(client.remoteIP());
+              PR_DEBUGLN(" not in ACL.");
+              return refuse_connection(client);
+            }
+            if (http_data.getHeader().indexOf("/acl")) {
               http_acl_request(client, http_data);
-            break;
+              break;
+            }
           }
 
 
