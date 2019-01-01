@@ -148,6 +148,10 @@ void loop(void)
               http_acl_request(client, http_data);
               break;
             }
+            if (http_data.getHeader().indexOf("/sms")) {
+              http_sms_request(client, http_data);
+              break;
+            }
           }
 
 
