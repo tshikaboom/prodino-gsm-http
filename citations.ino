@@ -6,7 +6,7 @@
 
 #define ARRAY_LEN 17
 
-String citation[ARRAY_LEN] = {
+const char* citation[] = {
   "Qui vole un boeuf est vachement musclé.",
   "Mouette qui pète, gare à la tempête... ",
   "Pingouins dans les champs, hiver méchant...",
@@ -26,7 +26,7 @@ String citation[ARRAY_LEN] = {
   "Elle a frit, elle a tout compris!"
 };
 
-String auteur[ARRAY_LEN] = {
+const char* auteur[] = {
   "- Mao Tsetung",
   "- Blaise Pascal",
   "- Winston Churchill",
