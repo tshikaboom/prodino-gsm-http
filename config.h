@@ -61,4 +61,10 @@
 // Max number of IPs in the ACL. At HTTP_RESPONSE_MAX=512 should give us 31
 #define ACL_IP_MAX ((unsigned int) ((HTTP_RESPONSE_MAX - 19 + 16) / 16))
 
+struct http_response {
+  int value; // return value. Zero on success, otherwise respects errno.h
+  char body[HTTP_RESPONSE_MAX];
+};
+
+
 #endif // CONFIG_H

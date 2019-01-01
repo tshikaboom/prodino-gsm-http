@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 
+#include <limits.h>
 #include "config.h"
 #include <postParser.h>
 
@@ -62,6 +63,15 @@ int check_incoming_ip(EthernetClient client) {
   }
   // ACL full, but client's IP not in it
   return -ENOENT;
+}
+
+void clear_http_response() {
+  unsigned int i;
+
+  current_response.value = INT_MIN;
+
+  for (i = 0; i < HTTP_RESPONSE_MAX; i++)
+    current_response.body[i] = '\0';
 }
 
 void accept_connection(EthernetClient client) {

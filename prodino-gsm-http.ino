@@ -34,6 +34,8 @@ const char PINNUMBER[] = CONFIG_SIM_PIN;
 // APN
 const char GPRS_APN[] = CONFIG_SIM_APN;
 
+struct http_response current_response;
+
 void setup_acl() {
   unsigned int i;
 
@@ -106,6 +108,7 @@ void recvWithEndMarker() {
 
 void loop(void)
 {
+  clear_http_response();
   recvWithEndMarker();
   parseIP();
 
