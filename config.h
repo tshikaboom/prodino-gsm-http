@@ -16,9 +16,6 @@
 // define this to get some citations with the browser
 #define  CONFIG_CITATION
 
-// Max number of IPs in the ACL
-#define ACL_IP_MAX 32
-
 // SIM card PIN number as a string
 #define CONFIG_SIM_PIN "1234"
 
@@ -59,5 +56,9 @@
  */
 #define STRING_QUOTE(x) String("\"") + x + "\""
 
+#define HTTP_RESPONSE_MAX 512
+
+// Max number of IPs in the ACL. At HTTP_RESPONSE_MAX=512 should give us 31
+#define ACL_IP_MAX ((unsigned int) ((HTTP_RESPONSE_MAX - 19 + 16) / 16))
 
 #endif // CONFIG_H
