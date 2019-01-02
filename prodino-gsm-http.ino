@@ -142,7 +142,8 @@ void loop(void)
               PR_DEBUG("Client ");
               PR_DEBUG(client.remoteIP());
               PR_DEBUGLN(" not in ACL.");
-              return refuse_connection(client);
+              refuse_connection(client);
+              break;
             }
             if (http_data.getHeader().indexOf("/acl")) {
               http_acl_request(client, http_data);
