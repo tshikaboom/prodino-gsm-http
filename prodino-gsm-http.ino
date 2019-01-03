@@ -154,6 +154,10 @@ void loop(void)
               break;
             }
           }
+          else {
+            error_connection(client);
+            break;
+          }
 
 
         }
