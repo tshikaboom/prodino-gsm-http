@@ -51,20 +51,6 @@ IPAddress decimal_to_ip(int ip) {
   return ip_addr.fromString(decimal_to_ip_string(ip));
 }
 
-int check_incoming_ip(EthernetClient client) {
-  unsigned int i;
-  for (i = 0; i < ACL_IP_MAX; i++) {
-    // client IP address in ACL
-    if (current_acl[i] == ip_to_decimal(client.remoteIP()))
-      return 0;
-    // end of ACL, client not in ACL
-    if (current_acl[i] == 0)
-      return -ENOENT;
-  }
-  // ACL full, but client's IP not in it
-  return -ENOENT;
-}
-
 void clear_http_response() {
   unsigned int i;
 

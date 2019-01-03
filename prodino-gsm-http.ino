@@ -138,7 +138,7 @@ void loop(void)
 
           if (getContentType(http_data) == "application/json") {
             PR_DEBUGLN("Going to parse some ACL data...");
-            if (check_incoming_ip(client) == -1) {
+            if (check_incoming_ip(client) == -ENOENT) {
               PR_DEBUG("Client ");
               PR_DEBUG(client.remoteIP());
               PR_DEBUGLN(" not in ACL.");

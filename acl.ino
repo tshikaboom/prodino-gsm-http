@@ -8,6 +8,20 @@
 
 extern uint32_t current_acl[ACL_IP_MAX];
 
+int check_incoming_ip(EthernetClient client) {
+  unsigned int i;
+  for (i = 0; i < ACL_IP_MAX; i++) {
+    // client IP address in ACL
+    if (current_acl[i] == ip_to_decimal(client.remoteIP()))
+      return 0;
+    // end of ACL, client not in ACL
+    if (current_acl[i] == 0)
+      return -ENOENT;
+  }
+  // ACL full, but client's IP not in it
+  return -ENOENT;
+}
+
 int add_ip_to_acl(IPAddress ip) {
   unsigned int i;
   uint32_t ip_decimal = ip_to_decimal(ip);
