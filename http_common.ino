@@ -97,3 +97,68 @@ void error_connection(EthernetClient client) {
     client.println(current_response.body);
 }
 
+void http_request(EthernetClient client) {
+
+  PostParser http_data = PostParser(client);
+  PR_DEBUG("new client IP ");
+  PR_DEBUGLN(client.remoteIP());
+  bool currentLineIsBlank = true;
+  while (client.connected()) {
+    if (client.available()) {
+      char c = client.read();
+      http_data.addHeaderCharacter(c);
+      // if you've gotten to the end of the line (received a newline
+      // character) and the line is blank, the http request has ended,
+      // so you can send a reply
+      if (c == '\n' && currentLineIsBlank) {
+#ifdef CONFIG_CITATION
+        if (http_data.getHeader().indexOf("GET / ") != -1) {
+          HTTP200Citation(client);
+          break;
+        }
+#endif // CONFIG_CITATION
+
+        if (getContentType(http_data) == "application/json") {
+          PR_DEBUGLN("Going to parse some ACL data...");
+          if (check_incoming_ip(client) == -ENOENT) {
+            PR_DEBUG("Client ");
+            PR_DEBUG(client.remoteIP());
+            PR_DEBUGLN(" not in ACL.");
+            refuse_connection(client);
+            break;
+          }
+          if (http_data.getHeader().indexOf("/acl")) {
+            http_acl_request(client, http_data);
+            break;
+          }
+          if (http_data.getHeader().indexOf("/sms")) {
+            http_sms_request(client, http_data);
+            break;
+          }
+        }
+        else {
+          error_connection(client);
+          break;
+        }
+
+
+      }
+      if (c == '\n') {
+        // you're starting a new line
+        currentLineIsBlank = true;
+      } else if (c != '\r') {
+        // you've gotten a character on the current line
+        currentLineIsBlank = false;
+      }
+    }
+  }
+  PR_DEBUGLN(http_data.getHeader());
+  PR_DEBUGLN(http_data.getPayload());
+
+  // give the web browser time to receive the data
+  delay(1);
+  // close the connection:
+  client.stop();
+  PR_DEBUGLN("client disconnected");
+}
+
