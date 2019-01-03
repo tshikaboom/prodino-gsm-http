@@ -50,12 +50,22 @@ void setup_acl() {
 
 
 void setup_ethernet() {
-  PR_DEBUG("begin ethernet..");
+  PR_DEBUG("DHCP request...");
 
-  Ethernet.begin(mac);
-
-  PR_DEBUG(" got IP addr ");
-  PR_DEBUGLN(Ethernet.localIP());
+  if (Ethernet.begin(mac) == 0) {
+    PR_DEBUGLN(" could not get an IP address!");
+    if (Ethernet.linkStatus() == LinkOFF) {
+      PR_DEBUGLN("Ethernet cable is not connected.");
+    }
+    else {
+      PR_DEBUGLN("Something is wrong with the Ethernet shield");
+    }
+  }
+  else {
+    PR_DEBUG(Ethernet.localIP());
+    PR_DEBUG(", gateway ");
+    PR_DEBUGLN(Ethernet.gatewayIP());
+  }
 }
 
 
