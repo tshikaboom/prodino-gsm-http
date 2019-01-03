@@ -81,7 +81,6 @@ void setup()
   // Init Dino board. Set pins, start W5500.
   KMPProDinoMKRZero.init(ProDino_MKR_Zero_Ethernet);
 
-  setup_ethernet();
   setup_modem();
 
 }
@@ -122,7 +121,16 @@ void loop(void)
   recvWithEndMarker();
   parseIP();
 
-  Ethernet.maintain();
+  /*
+     Opportunistically try to reconnect with DHCP.
+     W5500 datasheet says the source IP register is reset to 0 if it's not connected.
+  */
+  if ((Ethernet.linkStatus() == LinkON) && Ethernet.localIP() == IPAddress(0, 0, 0, 0)) {
+    setup_ethernet();
+  }
+  else {
+    Ethernet.maintain();
+  }
 
   // listen for incoming clients
   EthernetClient client = server.available();
