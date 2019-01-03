@@ -21,17 +21,16 @@ void http_sms_put(EthernetClient client) {
 
 void http_sms_request(EthernetClient client, PostParser http_data) {
   if (http_data.getHeader().indexOf("GET /sms/") != -1) {
-    accept_connection(client);
     http_sms_get(client);
   }
   if (http_data.getHeader().indexOf("POST /sms/") != -1) {
     http_data.grabPayload();
-    accept_connection(client);
     http_sms_post(client, http_data);
   }
   if ((http_data.getHeader().indexOf("PUT /sms/") != -1) ||
       (http_data.getHeader().indexOf("PATCH /sms") != -1)) {
     http_data.grabPayload();
+    http_sms_put(client);
   }
 
   switch (current_response.value) {
