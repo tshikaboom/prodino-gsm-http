@@ -97,7 +97,17 @@ void refuse_connection(EthernetClient client) {
 }
 
 void error_connection(EthernetClient client) {
-  // TODO. probably a placeholder and will go away
-  // The goal would be to send a specialized error per endpoint
+  size_t response_has_content = strlen(current_response.body);
+
+  client.println("HTTP/1.1 500 Internal Server Error");
+  client.println("Content-type: application/json");
+  client.println("Connection: close");
+  if (response_has_content) {
+    client.print("Content-Length: ");
+    client.println(response_has_content);
+  }
+  client.println();
+  if (response_has_content)
+    client.println(current_response.body);
 }
 
