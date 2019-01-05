@@ -21,8 +21,8 @@ the SIM card.
 TODO
 ----
 - properly handle errors
-- `/call/` endpoint
-- `/sms/` endpoint
+- Implement the `/call/` endpoint
+- Test the `/sms/` endpoint: GET, POST, PUT/PATCH, DELETE
 - Document everything
 - Move as much Strings as possible to char arrays
 
