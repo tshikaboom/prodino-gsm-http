@@ -61,7 +61,8 @@ void modem_recvWithEndMarker() {
   }
 
   endmarker_in_buf = strchr(received_chars, '\n');
-  endmarker_in_buf = '\0';
+  if (endmarker_in_buf)
+    endmarker_in_buf = '\0';
 
   parse_contact();
 }
