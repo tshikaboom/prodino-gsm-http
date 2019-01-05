@@ -25,6 +25,7 @@ TODO
 - Test the `/sms/` endpoint: GET, POST, PUT/PATCH, DELETE
 - Document everything
 - Move as much Strings as possible to char arrays
+- Use local namespaces to get some safety wrt. code robustness
 
 The tty is accessible with baud 115200. There's lots of configuration options
 available in `config.h`. The server gets chatty when the macros `DEBUG` and
