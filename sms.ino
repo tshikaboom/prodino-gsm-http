@@ -10,20 +10,40 @@ void http_sms_get(EthernetClient client) {
   String local_buffer(received_chars);
   String iterator;
   String number;
+  String sms_contents;
+  int i = 0;
+
 
   SerialGSM.println("AT+CMGL=ALL");
 
   modem_recvWithEndMarker();
 
+  strcat(current_response.body, "{[");
+
   while (iterator = local_buffer.substring(local_buffer.indexOf("+")) != "") {
     number_end = iterator.indexOf("\"");
     number = iterator.substring(0, number_end);
-    PR_DEBUG("Received SMS from number ");
-    PR_DEBUGLN();
+    PR_DEBUG("SMS from number ");
+    PR_DEBUG(number);
+    sms_contents = iterator.indexOf("\\r\\n") + 2;
+    PR_DEBUG(" \"");
+    PR_DEBUG(sms_contents);
+    PR_DEBUGLN("\"");
 
+    if (i > 0)
+      strcat(current_response.body, ",");
+
+    strcat(current_response.body, "\"from\":\"");
+    strcat(current_response.body, number.c_str());
+    strcat(current_response.body, "\", \"message\":\"");
+    strcat(current_response.body, sms_contents.c_str());
+    strcat(current_response.body, "\"");
+    i++;
   }
 
-  current_response.value = -ENOSYS;
+  strcat(current_response.body, "]}");
+
+  current_response.value = 0;
 }
 
 /**
