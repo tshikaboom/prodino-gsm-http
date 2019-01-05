@@ -5,6 +5,24 @@
 #define SMS_JSON_BUF_SIZE 320
 
 void http_sms_get(EthernetClient client) {
+  int ret;
+  int number_end;
+  String local_buffer(received_chars);
+  String iterator;
+  String number;
+
+  SerialGSM.println("AT+CMGL=ALL");
+
+  modem_recvWithEndMarker();
+
+  while (iterator = local_buffer.substring(local_buffer.indexOf("+")) != "") {
+    number_end = iterator.indexOf("\"");
+    number = iterator.substring(0, number_end);
+    PR_DEBUG("Received SMS from number ");
+    PR_DEBUGLN();
+
+  }
+
   current_response.value = -ENOSYS;
 }
 
