@@ -3,6 +3,7 @@
 #include <limits.h>
 #include "config.h"
 #include <postParser.h>
+#include <errno.h>
 
 // this code blatantly stolen from HTTP POST parser's private functions
 // need to check license
@@ -85,10 +86,18 @@ void refuse_connection(EthernetClient client) {
 void error_connection(EthernetClient client) {
   size_t response_has_content = strlen(current_response.body);
 
-  client.println("HTTP/1.1 500 Internal Server Error");
-  client.println("Content-type: application/json");
+  switch (current_response.value) {
+    case -ENOSYS:
+      client.println("HTTP/1.1 501 Not Implemented");
+      break;
+    default:
+      client.println("HTTP/1.1 500 Internal Server Error");
+      break;
+  }
+
   client.println("Connection: close");
   if (response_has_content) {
+    client.println("Content-type: application/json");
     client.print("Content-Length: ");
     client.println(response_has_content);
   }
