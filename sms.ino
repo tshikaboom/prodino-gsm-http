@@ -80,6 +80,23 @@ void http_sms_post(EthernetClient client, PostParser http_data) {
   return;
 }
 
+void http_sms_delete(EthernetClient client) {
+  String recv_buf;
+  SerialGSM.println("AT+CMGD=0,4");
+
+  while (SerialGSM.available()) {
+    recv_buf += SerialGSM.read();
+  }
+
+  if (recv_buf.indexOf("OK") != -1) {
+    current_response.value = 0;
+    strcat(current_response.body, "{\"status\":true}");
+  }
+  else {
+    current_response.value = -EIO;
+  }
+}
+
 // Not implemented.
 void http_sms_put(EthernetClient client) {
   current_response.value = -ENOSYS;
@@ -98,6 +115,10 @@ void http_sms_request(EthernetClient client, PostParser http_data) {
     http_data.grabPayload();
     http_sms_put(client);
   }
+  if (http_data.getHeader().indexOf("DELETE /sms") != -1) {
+    http_sms_delete(client);
+  }
+
 
   switch (current_response.value) {
     case 0:
