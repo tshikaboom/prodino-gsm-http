@@ -46,25 +46,24 @@ void parse_contact() {
 void modem_recvWithEndMarker() {
   static byte idx = 0;
   char endMarker = '\n';
+  char *endmarker_in_buf;
   char rc;
 
-  while (SerialGSM.available()) {
-    for (idx = 0; idx < SERIAL_BUF_SIZE - 1; idx++) {
+  for (idx = 0; idx < SERIAL_BUF_SIZE - 1; idx++) {
+    if (SerialGSM.available()) {
       rc = SerialGSM.read();
-      if (rc != endMarker) {
-        received_chars[idx] = rc;
-      }
-      else {
-        received_chars[idx] = '\0'; // terminate the string
-        new_data = true;
-        break;
-      }
+      received_chars[idx] = rc;
     }
-    received_chars[idx] = '\0';
-    parse_contact();
-
+    else {
+      received_chars[idx] = '\0';
+      break;
+    }
   }
 
+  endmarker_in_buf = strchr(received_chars, '\n');
+  endmarker_in_buf = '\0';
+
+  parse_contact();
 }
 
 
