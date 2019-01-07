@@ -8,6 +8,88 @@
 
 extern uint32_t current_acl[ACL_IP_MAX];
 
+void parse_contact() {
+  int index, i;
+  if (new_data == true) {
+    // create a string for ease of use
+    String s = String(received_chars);
+    s.trim();
+
+    if (s[0] == '+') {
+      PR_DEBUGLN("Got this string from SIM:");
+      PR_DEBUGLN(s);
+      if (s.indexOf("ACL") > 0) {
+        index = s.indexOf("\"");
+        String new_integer = s.substring(index + 1);
+        String real_integer = new_integer.substring(0, new_integer.indexOf("\""));
+        PR_DEBUGLN(String("Adding ") + strtoul(new_integer.c_str(), NULL, 10));
+        for (i = 0; i < ACL_IP_MAX; i++) {
+          if (current_acl[i] == 0)
+            break;
+        }
+        current_acl[i] = strtoul(new_integer.c_str(), NULL, 10);
+        print_acl();
+      }
+      else {
+        PR_DEBUGLN("... but no ACL entry.");
+      }
+    }
+  }
+  for (i = 0; i < SERIAL_BUF_SIZE; i++)
+    received_chars[i] = '\0';
+
+  new_data = false;
+}
+
+
+// Receive a string of maximum size SERIAL_BUF_SIZE, ending with a '\n'
+void modem_recvWithEndMarker() {
+  static byte idx = 0;
+  char endMarker = '\n';
+  char *endmarker_in_buf;
+  char rc;
+
+  for (idx = 0; idx < SERIAL_BUF_SIZE - 1; idx++) {
+    if (SerialGSM.available()) {
+      rc = SerialGSM.read();
+      received_chars[idx] = rc;
+    }
+    else {
+      received_chars[idx] = '\0';
+      break;
+    }
+  }
+
+  endmarker_in_buf = strchr(received_chars, '\n');
+  if (endmarker_in_buf)
+    endmarker_in_buf = '\0';
+
+  parse_contact();
+}
+
+
+void get_acl_from_sim() {
+  SerialGSM.println("AT+CPBF=\"ACL\"");
+  delay(100);
+
+  modem_recvWithEndMarker();
+}
+
+void overwrite_acl() {
+  int i;
+
+  for (i = 0; i < ACL_IP_MAX; i++) {
+    // end of list
+    if (current_acl[i] == 0)
+      break;
+
+    SerialGSM.println(String("AT+CPBW=") + i + "," + STRING_QUOTE(current_acl[i]) + ",," + STRING_QUOTE("ACL"));
+    delay(100);
+  }
+}
+
+
+
 int check_incoming_ip(EthernetClient client) {
   unsigned int i;
   for (i = 0; i < ACL_IP_MAX; i++) {
