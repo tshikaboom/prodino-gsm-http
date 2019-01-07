@@ -144,8 +144,7 @@ int replace_ip_in_acl(IPAddress old_ip, IPAddress new_ip) {
     }
   }
   // Old IP address not found
-  return -1;
-
+  return -ENOENT;
 }
 
 void print_acl() {
@@ -241,12 +240,15 @@ void http_acl_patch(EthernetClient client, PostParser http_data) {
 
   if (old_ip.fromString(old_ip_value)) {
     if (new_ip.fromString(new_ip_value)) {
-      if (replace_ip_in_acl(old_ip, new_ip) == 0) {
-        current_response.value = 0;
-      }
+      current_response.value = replace_ip_in_acl(old_ip, new_ip);
+    }
+    else {
+      // new_ip error handling
     }
   }
-
+  else {
+    // old_ip error handling
+  }
   current_response.value = -EINVAL;
 }
 
@@ -262,8 +264,7 @@ void http_acl_post(EthernetClient client, PostParser http_data) {
   const char* ip_value = root["ip"];
   IPAddress ip;
   if (ip.fromString(ip_value)) {
-    add_ip_to_acl(ip);
-    current_response.value = 0;
+    current_response.value = add_ip_to_acl(ip);
   }
   else current_response.value = -EINVAL;
 }
