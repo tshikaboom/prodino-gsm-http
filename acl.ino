@@ -83,7 +83,7 @@ void overwrite_acl() {
     if (current_acl[i] == 0)
       break;
 
-    SerialGSM.println(String("AT+CPBW=") + i + "," + STRING_QUOTE(current_acl[i]) + ",," + STRING_QUOTE("ACL"));
+    SerialGSM.println(String("AT+CPBW=") + i + "," + STRING_QUOTE(current_acl[i]) + ",," + STRING_QUOTE("ACL" + current_acl[i]));
     delay(100);
   }
 }
