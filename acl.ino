@@ -64,7 +64,7 @@ void modem_recvWithEndMarker() {
   if (endmarker_in_buf)
     endmarker_in_buf = '\0';
 
-  parse_contact();
+
 }
 
 
@@ -73,6 +73,8 @@ void get_acl_from_sim() {
   delay(100);
 
   modem_recvWithEndMarker();
+
+  parse_contact();
 }
 
 void overwrite_acl() {
