@@ -147,6 +147,47 @@ int replace_ip_in_acl(IPAddress old_ip, IPAddress new_ip) {
   return -ENOENT;
 }
 
+int delete_ip_from_sim(uint32_t ip) {
+  unsigned int index;
+  String internal_buf(received_chars);
+  String index_string;
+  int index_start, index_end;
+  // Search for the ACL entry, should return zero or one result
+  SerialGSM.println(String("AT+CPBF=") + STRING_QUOTE("ACL" + ip));
+  delay(100);
+
+  index_start = internal_buf.indexOf(": ");
+  if (index_start != -1) index_start += 2; // move to the actual index;
+
+  index_end = internal_buf.indexOf(",");
+
+  index_string = internal_buf.substring(index_start, index_end);
+
+  index = strtoul(index_string.c_str(), NULL, 10);
+
+  SerialGSM.println(String("AT+CPBW=") + index + ",");
+  delay(100);
+
+  return 0;
+}
+
+int delete_ip_from_acl(IPAddress ip) {
+  unsigned int i;
+  unsigned int j;
+  uint32_t ip_dec = ip_to_decimal(ip);
+
+
+  // We'll be creating a hole in the array...
+  for (i = 0; i < ACL_IP_MAX; i++) {
+    if (current_acl[i] == ip_dec) {
+      current_acl[i] = 0;
+      delete_ip_from_acl(ip_dec);
+      return 0;
+    }
+  }
+  return -ENOENT;
+}
+
 void print_acl() {
   int i;
 
@@ -269,6 +310,22 @@ void http_acl_post(EthernetClient client, PostParser http_data) {
   else current_response.value = -EINVAL;
 }
 
+void http_acl_delete(EthernetClient client, PostParser http_data) {
+  StaticJsonBuffer<JSON_BUF_SIZE> input_buffer;
+  JsonObject& root = input_buffer.parseObject(http_data.getPayload());
+
+  if (!root.success()) {
+    PR_DEBUGLN("JSON parse failed!");
+    current_response.value = -EINVAL;
+  }
+
+  const char* ip_value = root["ip"];
+  IPAddress ip;
+  if (ip.fromString(ip_value)) {
+    current_response.value = delete_ip_from_acl(ip);
+  }
+}
+
 void http_acl_request(EthernetClient client, PostParser http_data) {
   if (http_data.getHeader().indexOf("GET /acl") != -1) {
     http_acl_get(client);
@@ -281,6 +338,10 @@ void http_acl_request(EthernetClient client, PostParser http_data) {
       (http_data.getHeader().indexOf("PATCH /acl") != -1)) {
     http_data.grabPayload();
     http_acl_patch(client, http_data);
+  }
+  if (http_data.getHeader().indexOf("DELETE /acl") != -1) {
+    http_data.grabPayload();
+    http_acl_delete(client, http_data);
   }
 
   switch (current_response.value) {
