@@ -11,10 +11,10 @@ extern uint32_t current_acl[ACL_IP_MAX];
 void parse_contact() {
   int index, i;
   char *acl_line = NULL;
-  while (acl_line = strstr(received_chars, "+CPBF")) {
+  while ((acl_line = strstr(received_chars, "+CPBF")) != NULL) {
     String s = String(acl_line);
     s.trim();
-    PR_DEBUGLN("Got this string from SIM:");
+    PR_DEBUGLN("Parsing got this far:");
     PR_DEBUGLN(s);
     if (s.indexOf("ACL") > 0) {
       index = s.indexOf("\"");
@@ -26,18 +26,15 @@ void parse_contact() {
           break;
       }
       current_acl[i] = strtoul(new_integer.c_str(), NULL, 10);
-      print_acl();
+
     }
     else {
       PR_DEBUGLN("... but no ACL entry.");
     }
-    acl_line++; // shift by one so as to find the next entry
+    *acl_line = '-'; // invalidate this entry
   }
 
-  for (i = 0; i < SERIAL_BUF_SIZE; i++)
-    received_chars[i] = '\0';
-
-  new_data = false;
+  print_acl();
 }
 
 
