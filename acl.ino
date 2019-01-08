@@ -94,6 +94,9 @@ void modem_getResponse() {
 
 
 void get_acl_from_sim() {
+  PR_DEBUG("ACL size in RAM is ");
+  PR_DEBUG(ACL_IP_MAX);
+  PR_DEBUGLN(" IP addresses.");
   SerialGSM.println("AT+CPBF=\"ACL\"");
   delay(100);
 

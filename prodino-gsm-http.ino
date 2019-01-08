@@ -50,7 +50,7 @@ void setup_acl() {
 
 
 void setup_ethernet() {
-  PR_DEBUG("DHCP request...");
+  PR_DEBUG("DHCP request... ");
 
   if (Ethernet.begin(mac) == 0) {
     PR_DEBUGLN(" could not get an IP address!");
@@ -62,6 +62,7 @@ void setup_ethernet() {
     }
   }
   else {
+    PR_DEBUG("ok: ");
     PR_DEBUG(Ethernet.localIP());
     PR_DEBUG(", gateway ");
     PR_DEBUGLN(Ethernet.gatewayIP());
@@ -76,7 +77,7 @@ void setup()
   while (!Serial) {
   }
 
-  PR_DEBUGLN("Booting up...");
+  PR_DEBUGLN("Booting up.");
 
   // Init Dino board. Set pins, start W5500.
   KMPProDinoMKRZero.init(ProDino_MKR_Zero_Ethernet);
