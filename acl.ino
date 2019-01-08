@@ -84,6 +84,16 @@ void modem_getResponse() {
     return;
   }
 
+  // Check for CME errors
+  endmarker_in_buf = strstr(received_chars, "CME ERROR:");
+  if (endmarker_in_buf != NULL) {
+    PR_DEBUGLN(endmarker_in_buf);
+    Serial.flush();
+    endmarker_in_buf += strlen("ERROR");
+    endmarker_in_buf = '\0';
+    return;
+  }
+
   /* Either we get an OK or an ERROR from the GSM modem,
    * so we shouldn't get here. This could be replaced with an assert(false)
    * in the future.

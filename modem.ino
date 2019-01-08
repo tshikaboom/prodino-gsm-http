@@ -8,6 +8,16 @@
 TinyGsm modem(SerialGSM);
 unsigned int gsm_modem_rate = 0;
 
+void enable_error_reporting() {
+  String command = "AT+CMEE=1";
+
+  SerialGSM.println(command);
+  SerialGSM.flush();
+  delay(100);
+
+  modem_getResponse();
+}
+
 void setup_modem() {
   RegStatus status;
   unsigned int wait = 60000;
@@ -34,6 +44,8 @@ void setup_modem() {
     PR_DEBUG("ok: ");
     PR_DEBUGLN(modemInfo);
   }
+
+  enable_error_reporting();
 
   // Unlock your SIM card if it locked with a PIN code.
   // If PIN is not valid don't try more than 3 time because the SIM card locked and need unlock with a PUK code.
