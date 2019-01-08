@@ -45,7 +45,7 @@ void parse_contact() {
    OK\r\n or ERROR\r\n. This is used to digest AT command results on our own,
    although TinyGSM or MKRGSM may have some equivalent functions.
 */
-void modem_getResponse() {
+bool modem_getResponse() {
   unsigned int idx = 0;
   char *endmarker_in_buf = NULL;
 
@@ -71,7 +71,7 @@ void modem_getResponse() {
     Serial.flush();
     endmarker_in_buf += strlen("OK");
     endmarker_in_buf = '\0';
-    return;
+    return true;
   }
 
   // Check for "ERROR\r\n"
@@ -81,7 +81,7 @@ void modem_getResponse() {
     Serial.flush();
     endmarker_in_buf += strlen("ERROR");
     endmarker_in_buf = '\0';
-    return;
+    return false;
   }
 
   // Check for CME errors
@@ -91,7 +91,7 @@ void modem_getResponse() {
     Serial.flush();
     endmarker_in_buf += strlen("ERROR");
     endmarker_in_buf = '\0';
-    return;
+    return false;
   }
 
   /* Either we get an OK or an ERROR from the GSM modem,
@@ -99,6 +99,7 @@ void modem_getResponse() {
    * in the future.
    */
   PR_DEBUGLN("modem_getResponse(): DEAD CODE");
+  return false;
 }
 
 
@@ -106,11 +107,14 @@ void get_acl_from_sim() {
   PR_DEBUG("ACL size in RAM is ");
   PR_DEBUG(ACL_IP_MAX);
   PR_DEBUGLN(" IP addresses.");
-  SerialGSM.println("AT+CPBF=\"ACL\"");
-  SerialGSM.flush();
-  delay(100);
 
-  modem_getResponse();
+
+  do {
+    SerialGSM.println("AT+CPBF=\"ACL\"");
+    SerialGSM.flush();
+    delay(1000);
+  } while (modem_getResponse() == false);
+
 
   parse_contact();
 }
