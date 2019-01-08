@@ -98,6 +98,7 @@ void get_acl_from_sim() {
   PR_DEBUG(ACL_IP_MAX);
   PR_DEBUGLN(" IP addresses.");
   SerialGSM.println("AT+CPBF=\"ACL\"");
+  SerialGSM.flush();
   delay(100);
 
   modem_getResponse();
