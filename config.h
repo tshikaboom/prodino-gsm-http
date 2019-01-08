@@ -23,7 +23,7 @@
 #define CONFIG_SIM_APN "Free"
 
 // Used to instantiate a buffer to read from serial
-#define CONFIG_SERIAL_BUF_SIZE 64
+#define CONFIG_SERIAL_BUF_SIZE 512
 
 /*
  * This is used as a key to get an authorized IP from serial.
@@ -56,7 +56,7 @@
  */
 #define STRING_QUOTE(x) String("\"") + x + "\""
 
-#define HTTP_RESPONSE_MAX 512
+#define HTTP_RESPONSE_MAX 2048
 
 // Max number of IPs in the ACL. At HTTP_RESPONSE_MAX=512 should give us 31
 #define ACL_IP_MAX ((unsigned int) ((HTTP_RESPONSE_MAX - 19 + 16) / 16))

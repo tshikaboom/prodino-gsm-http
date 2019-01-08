@@ -95,7 +95,7 @@ boolean new_data = false;
 
 // Receive a string of maximum size SERIAL_BUF_SIZE, ending with a '\n'
 void recvWithEndMarker() {
-  static byte idx = 0;
+  unsigned int idx = 0;
   char endMarker = '\n';
   char rc;
 
