@@ -47,9 +47,12 @@ String decimal_to_ip_string(unsigned int ip) {
          + (ip & 0xFF);
 }
 
-IPAddress decimal_to_ip(int ip) {
-  IPAddress ip_addr;
-  return ip_addr.fromString(decimal_to_ip_string(ip));
+IPAddress decimal_to_ip(unsigned int ip) {
+  return IPAddress(
+           (ip >> 24) & 0xFF,
+           (ip >> 16) & 0xFF,
+           (ip >> 8) & 0xFF,
+           ip & 0xFF);
 }
 
 void clear_http_response() {
