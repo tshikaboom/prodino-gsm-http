@@ -92,9 +92,9 @@ bool modem_getResponse() {
   }
 
   /* Either we get an OK or an ERROR from the GSM modem,
-   * so we shouldn't get here. This could be replaced with an assert(false)
-   * in the future.
-   */
+     so we shouldn't get here. This could be replaced with an assert(false)
+     in the future.
+  */
   PR_DEBUGLN("modem_getResponse(): DEAD CODE");
   return false;
 }
