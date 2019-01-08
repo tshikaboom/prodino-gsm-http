@@ -99,11 +99,24 @@ bool modem_getResponse() {
   return false;
 }
 
+void select_sim_phonebook() {
+  String command = "AT+CPBS=\"SM\"";
+  PR_DEBUG("Selecting SIM phonebook... (");
+  PR_DEBUG(command);
+  PR_DEBUGLN(")");
+  SerialGSM.println(command);
+  SerialGSM.flush();
+  delay(100);
+
+  modem_getResponse();
+}
 
 void get_acl_from_sim() {
   PR_DEBUG("ACL size in RAM is ");
   PR_DEBUG(ACL_IP_MAX);
   PR_DEBUGLN(" IP addresses.");
+
+  select_sim_phonebook();
 
 
   do {

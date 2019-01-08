@@ -29,12 +29,15 @@ void setup_modem() {
   delay(100);
   digitalWrite(GSM_RESETN, LOW);
 
-  PR_DEBUG("Initializing modem... ");
+  PR_DEBUG("Auto-baud on GSM modem... ");
   if (!gsm_modem_rate) {
     gsm_modem_rate = TinyGsmAutoBaud(SerialGSM);
   }
+  PR_DEBUG("ok: ");
+  PR_DEBUG(gsm_modem_rate);
+  PR_DEBUGLN(" baud.");
 
-
+  PR_DEBUG("Initializing modem... ");
   modem.init();
   String modemInfo = modem.getModemInfo();
   if (modemInfo == "") {
@@ -90,8 +93,8 @@ void setup_modem() {
         PR_DEBUG("Unknown status!");
         break;
     }
-//    PR_DEBUGLN();
-//    PR_DEBUG("Waiting for network, ");
+    //    PR_DEBUGLN();
+    //    PR_DEBUG("Waiting for network, ");
   }
 
   if (modem.isNetworkConnected()) {
