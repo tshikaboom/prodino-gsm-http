@@ -244,11 +244,11 @@ int delete_ip_from_acl(IPAddress ip) {
 
 void print_acl() {
   int i;
-
+  PR_DEBUGLN("Our ACL is as follows:");
   for (i = 0; i < ACL_IP_MAX; i++) {
-    PR_DEBUGLN(current_acl[i]);
     if (current_acl[i] == 0)
       break;
+    PR_DEBUGLN(decimal_to_ip_string(current_acl[i]));
   }
 }
 
