@@ -10,31 +10,30 @@ extern uint32_t current_acl[ACL_IP_MAX];
 
 void parse_contact() {
   int index, i;
-  if (new_data == true) {
-    // create a string for ease of use
-    String s = String(received_chars);
+  char *acl_line = NULL;
+  while (acl_line = strstr(received_chars, "+CPBF")) {
+    String s = String(acl_line);
     s.trim();
-
-    if (s[0] == '+') {
-      PR_DEBUGLN("Got this string from SIM:");
-      PR_DEBUGLN(s);
-      if (s.indexOf("ACL") > 0) {
-        index = s.indexOf("\"");
-        String new_integer = s.substring(index + 1);
-        String real_integer = new_integer.substring(0, new_integer.indexOf("\""));
-        PR_DEBUGLN(String("Adding ") + strtoul(new_integer.c_str(), NULL, 10));
-        for (i = 0; i < ACL_IP_MAX; i++) {
-          if (current_acl[i] == 0)
-            break;
-        }
-        current_acl[i] = strtoul(new_integer.c_str(), NULL, 10);
-        print_acl();
+    PR_DEBUGLN("Got this string from SIM:");
+    PR_DEBUGLN(s);
+    if (s.indexOf("ACL") > 0) {
+      index = s.indexOf("\"");
+      String new_integer = s.substring(index + 1);
+      String real_integer = new_integer.substring(0, new_integer.indexOf("\""));
+      PR_DEBUGLN(String("Adding ") + strtoul(new_integer.c_str(), NULL, 10));
+      for (i = 0; i < ACL_IP_MAX; i++) {
+        if (current_acl[i] == 0)
+          break;
       }
-      else {
-        PR_DEBUGLN("... but no ACL entry.");
-      }
+      current_acl[i] = strtoul(new_integer.c_str(), NULL, 10);
+      print_acl();
     }
+    else {
+      PR_DEBUGLN("... but no ACL entry.");
+    }
+    acl_line++; // shift by one so as to find the next entry
   }
+
   for (i = 0; i < SERIAL_BUF_SIZE; i++)
     received_chars[i] = '\0';
 
