@@ -42,29 +42,54 @@ void parse_contact() {
 }
 
 
-// Receive a string of maximum size SERIAL_BUF_SIZE, ending with a '\n'
-void modem_recvWithEndMarker() {
-  static byte idx = 0;
-  char endMarker = '\n';
-  char *endmarker_in_buf;
-  char rc;
+/* Receive a string of maximum size SERIAL_BUF_SIZE, ending with either
+   OK\r\n or ERROR\r\n. This is used to digest AT command results on our own,
+   although TinyGSM or MKRGSM may have some equivalent functions.
+*/
+void modem_getResponse() {
+  unsigned int idx = 0;
+  char *endmarker_in_buf = NULL;
 
+  // Initialize the array to zero before reading anything into it
+  for (idx = 0; idx < SERIAL_BUF_SIZE; idx++) {
+    received_chars[idx] = '\0';
+  }
+
+  // Read chars in the array
   for (idx = 0; idx < SERIAL_BUF_SIZE - 1; idx++) {
     if (SerialGSM.available()) {
-      rc = SerialGSM.read();
-      received_chars[idx] = rc;
+      received_chars[idx] = SerialGSM.read();
     }
     else {
-      received_chars[idx] = '\0';
       break;
     }
   }
 
-  endmarker_in_buf = strchr(received_chars, '\n');
-  if (endmarker_in_buf)
+  // Check for "OK\r\n"
+  endmarker_in_buf = strstr(received_chars, GSM_OK);
+  if (endmarker_in_buf != NULL) {
+    PR_DEBUGLN("Command OK");
+    Serial.flush();
+    endmarker_in_buf += strlen("OK");
     endmarker_in_buf = '\0';
+    return;
+  }
 
+  // Check for "ERROR\r\n"
+  endmarker_in_buf = strstr(received_chars, GSM_ERROR);
+  if (endmarker_in_buf != NULL) {
+    PR_DEBUGLN("Command ERROR");
+    Serial.flush();
+    endmarker_in_buf += strlen("ERROR");
+    endmarker_in_buf = '\0';
+    return;
+  }
 
+  /* Either we get an OK or an ERROR from the GSM modem,
+   * so we shouldn't get here. This could be replaced with an assert(false)
+   * in the future.
+   */
+  PR_DEBUGLN("modem_getResponse(): DEAD CODE");
 }
 
 
@@ -72,7 +97,7 @@ void get_acl_from_sim() {
   SerialGSM.println("AT+CPBF=\"ACL\"");
   delay(100);
 
-  modem_recvWithEndMarker();
+  modem_getResponse();
 
   parse_contact();
 }

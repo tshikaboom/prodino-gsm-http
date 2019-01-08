@@ -18,7 +18,7 @@ void http_sms_get(EthernetClient client) {
 
   SerialGSM.println("AT+CMGL=ALL");
 
-  modem_recvWithEndMarker();
+  modem_getResponse();
 
   strcat(current_response.body, "{[");
 
