@@ -95,7 +95,8 @@ bool modem_getResponse() {
      so we shouldn't get here. This could be replaced with an assert(false)
      in the future.
   */
-  PR_DEBUGLN("modem_getResponse(): DEAD CODE");
+  PR_DEBUGLN("modem_getResponse(): some other case, showing contents...");
+  PR_DEBUGLN(received_chars);
   return false;
 }
 
