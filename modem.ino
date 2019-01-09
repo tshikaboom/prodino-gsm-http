@@ -20,7 +20,7 @@ void enable_error_reporting() {
 
 void setup_modem() {
   RegStatus status;
-  unsigned int wait = 60000;
+  unsigned int wait = 10000;
   pinMode(GSM_DTR, OUTPUT);
   digitalWrite(GSM_DTR, LOW);
 
