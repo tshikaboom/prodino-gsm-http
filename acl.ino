@@ -264,8 +264,8 @@ void parseIP() {
     if (s.startsWith("IPAddr")) {
       index_equals = s.indexOf('=');
       if (index_equals != -1) {
-
-        if (ip.fromString(s.substring(index_equals + 1))) {
+        String ip_string = s.substring(index_equals + 1);
+        if (ip.fromString(ip_string)) {
           PR_DEBUG("New IP going to be added: ");
           PR_DEBUGLN(ip);
           ret = add_ip_to_acl(ip);
@@ -286,7 +286,8 @@ void parseIP() {
 
         }
         else {
-          PR_DEBUGLN("Bad IP address format");
+          PR_DEBUG("Bad IP address format, got ");
+          PR_DEBUGLN(ip_string);
         }
 
 
