@@ -61,9 +61,6 @@ void setup_modem() {
   }
 
 
-  PR_DEBUGLN("Loading ACL...");
-  get_acl_from_sim();
-
   PR_DEBUG("Waiting for network... ");
   PR_DEBUG("(delay is ");
   PR_DEBUG(wait);
@@ -110,6 +107,11 @@ void setup_modem() {
   else {
     PR_DEBUGLN("ok.");
   }
+
+
+  PR_DEBUGLN("Loading ACL...");
+  get_acl_from_sim();
+
 
 }
 
