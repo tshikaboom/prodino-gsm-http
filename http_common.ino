@@ -139,11 +139,13 @@ void http_request(EthernetClient client) {
             refuse_connection(client);
             break;
           }
-          if (http_data.getHeader().indexOf("/acl")) {
+          if (http_data.getHeader().indexOf("/acl") != -1) {
+            PR_DEBUGLN("http: going to /acl");
             http_acl_request(client, http_data);
             break;
           }
-          if (http_data.getHeader().indexOf("/sms")) {
+          if (http_data.getHeader().indexOf("/sms") != -1) {
+            PR_DEBUGLN("http: going to /sms");
             http_sms_request(client, http_data);
             break;
           }
