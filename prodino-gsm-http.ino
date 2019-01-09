@@ -99,22 +99,25 @@ void recvWithEndMarker() {
   char endMarker = '\n';
   char rc;
 
-  while (Serial.available() > 0 && new_data == false) {
-    rc = Serial.read();
+  for (idx = 0; idx < SERIAL_BUF_SIZE; idx++) {
+    received_chars[idx] = '\0';
+  }
 
-    if (rc != endMarker) {
-      received_chars[idx] = rc;
-      idx++;
-      if (idx >= SERIAL_BUF_SIZE) {
-        idx = SERIAL_BUF_SIZE - 1;
-      }
+  new_data = false;
+
+  // Read chars in the array
+  for (idx = 0; idx < SERIAL_BUF_SIZE - 1; idx++) {
+    if (Serial.available()) {
+      received_chars[idx] = Serial.read();
     }
     else {
-      received_chars[SERIAL_BUF_SIZE - 1] = '\0'; // terminate the string
-      idx = 0;
-      new_data = true;
+      break;
     }
   }
+
+  if (idx > 0)
+    new_data = true;
+
 }
 
 void loop(void)
