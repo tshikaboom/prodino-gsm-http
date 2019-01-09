@@ -14,7 +14,8 @@ void http_sms_get(EthernetClient client) {
   String number;
   String sms_contents;
   int i = 0;
-
+  char *it;
+  char *number_begin, *number_end, *real_number;
 
   SerialGSM.println("AT+CMGL=ALL");
 
@@ -22,6 +23,13 @@ void http_sms_get(EthernetClient client) {
 
   strcat(current_response.body, "{[");
 
+  while ((it = strstr(received_chars, "+CMGL")) != NULL) {
+    String s = String(it);
+    s.trim();
+    if ((number = strstr(it, "\"+")) != NULL) {
+
+    }
+  }
   while (iterator = local_buffer.substring(local_buffer.indexOf("+")) != "") {
     number_end = iterator.indexOf("\"");
     number = iterator.substring(0, number_end);
@@ -57,7 +65,7 @@ void http_sms_post(EthernetClient client, PostParser http_data) {
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
   unsigned int sms_target_index = http_data.getHeader().indexOf("+");
   unsigned int sms_target_end = http_data.getHeader().substring(sms_target_index).indexOf(" HTTP");
-  String sms_target = http_data.getHeader().substring(sms_target_index, sms_target_index+sms_target_end);
+  String sms_target = http_data.getHeader().substring(sms_target_index, sms_target_index + sms_target_end);
   sms_target.trim();
   int ret;
 
@@ -110,7 +118,7 @@ void http_sms_put(EthernetClient client) {
 }
 
 void http_sms_request(EthernetClient client, PostParser http_data) {
-  if (http_data.getHeader().indexOf("GET /sms/") != -1) {
+  if (http_data.getHeader().indexOf("GET /sms") != -1) {
     http_sms_get(client);
   }
   if (http_data.getHeader().indexOf("POST /sms/") != -1) {
