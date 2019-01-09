@@ -56,8 +56,12 @@ void http_sms_post(EthernetClient client, PostParser http_data) {
   StaticJsonBuffer<SMS_JSON_BUF_SIZE * 2> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
   unsigned int sms_target_index = http_data.getHeader().indexOf("+");
-  String sms_target = http_data.getHeader().substring(sms_target_index);
+  unsigned int sms_target_end = http_data.getHeader().substring(sms_target_index).indexOf(" HTTP");
+  String sms_target = http_data.getHeader().substring(sms_target_index, sms_target_index+sms_target_end);
+  sms_target.trim();
   int ret;
+
+  PR_DEBUGLN("http_sms_post!");
 
   if (!root.success()) {
     PR_DEBUGLN("JSON parse failed!");
@@ -66,15 +70,16 @@ void http_sms_post(EthernetClient client, PostParser http_data) {
   }
 
   const char* sms_contents = root["message"];
+  String sms_contents_str(sms_contents);
 
   PR_DEBUG("Sending message \"");
   PR_DEBUG(sms_contents);
   PR_DEBUG("\" to ");
   PR_DEBUG(sms_target);
-
-  ret = modem.sendSMS(sms_target, sms_contents);
-
   PR_DEBUG(": ");
+
+  ret = modem.sendSMS(sms_target, sms_contents_str);
+
   PR_DEBUGLN(ret ? "OK." : "failed.");
 
   // let's use EIO to indicate SMS sending fail
@@ -110,6 +115,8 @@ void http_sms_request(EthernetClient client, PostParser http_data) {
   }
   if (http_data.getHeader().indexOf("POST /sms/") != -1) {
     http_data.grabPayload();
+    PR_DEBUG("PUT SMS: payload is ");
+    PR_DEBUGLN(http_data.getPayload());
     http_sms_post(client, http_data);
   }
   if ((http_data.getHeader().indexOf("PUT /sms/") != -1) ||
