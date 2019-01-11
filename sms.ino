@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-#include <TinyGsmClient.h>
+#include <MKRGSM.h>
 
 #define SMS_JSON_BUF_SIZE 320
 /*
@@ -76,10 +76,12 @@ void http_sms_get(EthernetClient client) {
 */
 void http_sms_post(EthernetClient client, PostParser http_data) {
   (void) client;
+  GSM_SMS sms_stream;
   StaticJsonBuffer<SMS_JSON_BUF_SIZE * 2> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
   unsigned int sms_target_index = http_data.getHeader().indexOf("/sms/+");
   unsigned int sms_target_end = http_data.getHeader().substring(sms_target_index).indexOf(" HTTP");
+  unsigned int i = 0;
 
 
   int ret;
@@ -106,7 +108,9 @@ void http_sms_post(EthernetClient client, PostParser http_data) {
   PR_DEBUG(sms_target);
   PR_DEBUG(": ");
 
-  ret = modem.sendSMS(sms_target, sms_contents_str);
+  sms_stream.beginSMS(sms_target.c_str());
+  sms_stream.print(sms_contents);
+  ret = sms_stream.endSMS();
 
   PR_DEBUGLN(ret ? "OK." : "failed.");
 
@@ -134,6 +138,7 @@ void http_sms_delete(EthernetClient client) {
 
 // Not implemented.
 void http_sms_put(EthernetClient client) {
+  (void) client;
   current_response.value = -ENOSYS;
 }
 

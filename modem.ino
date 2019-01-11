@@ -2,11 +2,11 @@
 
 #include "config.h"
 
-#include <TinyGsmClient.h>
+#include <MKRGSM.h>
 
-
-TinyGsm modem(SerialGSM);
+GSM modem;
 unsigned int gsm_modem_rate = 0;
+bool gsm_connected = false;
 
 void enable_error_reporting() {
   String command = "AT+CMEE=1";
@@ -19,7 +19,7 @@ void enable_error_reporting() {
 }
 
 void setup_modem() {
-  RegStatus status;
+  GSM3_NetworkStatus_t status;
   unsigned int wait = 10000;
   pinMode(GSM_DTR, OUTPUT);
   digitalWrite(GSM_DTR, LOW);
@@ -29,83 +29,33 @@ void setup_modem() {
   delay(100);
   digitalWrite(GSM_RESETN, LOW);
 
-  PR_DEBUG("Auto-baud on GSM modem... ");
-  if (!gsm_modem_rate) {
-    gsm_modem_rate = TinyGsmAutoBaud(SerialGSM);
-  }
-  PR_DEBUG("ok: ");
-  PR_DEBUG(gsm_modem_rate);
-  PR_DEBUGLN(" baud.");
-
   PR_DEBUG("Initializing modem... ");
-  modem.init();
-  String modemInfo = modem.getModemInfo();
-  if (modemInfo == "") {
-    PR_DEBUGLN("FAIL");
-  }
-  else {
-    PR_DEBUG("ok: ");
-    PR_DEBUGLN(modemInfo);
-  }
 
   enable_error_reporting();
 
-  // Unlock your SIM card if it locked with a PIN code.
-  // If PIN is not valid don't try more than 3 time because the SIM card locked and need unlock with a PUK code.
-  PR_DEBUG("Authenticating SIM... ");
-  if (strlen(PINNUMBER) > 0 && !modem.simUnlock(PINNUMBER)) {
-    PR_DEBUGLN("FAIL");
-  }
-  else {
-    PR_DEBUGLN("ok.");
-  }
-
-
+  // Connect to network with PIN
   PR_DEBUG("Waiting for network... ");
   PR_DEBUG("(delay is ");
   PR_DEBUG(wait);
   PR_DEBUG(" ms)");
-  while (!modem.waitForNetwork(wait))
-  {
-    status = modem.getRegistrationStatus();
+  while (gsm_connected == false) {
+    status = modem.begin(PINNUMBER);
     PR_DEBUGLN();
     switch (status) {
-      case REG_UNREGISTERED:
-        PR_DEBUG("Unregistered to network, waiting...");
+      case GSM_READY:
+        gsm_connected = true;
+        PR_DEBUGLN("ok, roaming in a foreign network");
         break;
-      case REG_SEARCHING:
-        PR_DEBUG("Searching for network...");
-        break;
-      case REG_DENIED:
-        PR_DEBUG("Registering denied.");
-        break;
-      case REG_OK_HOME:
-        PR_DEBUG("Registered to home network");
-        break;
-      case REG_OK_ROAMING:
-        PR_DEBUG("Roaming in a foreign network");
-        break;
-      case REG_UNKNOWN:
+      case CONNECTING:
+      case IDLE:
       default:
         PR_DEBUG("Unknown status!");
         break;
     }
+    if (gsm_connected == false)
+      delay(wait);
     //    PR_DEBUGLN();
     //    PR_DEBUG("Waiting for network, ");
-  }
-
-  if (modem.isNetworkConnected()) {
-    PR_DEBUGLN(" ok.");
-  }
-  PR_DEBUG("Connecting to ");
-  PR_DEBUG(GPRS_APN);
-  PR_DEBUG("... ");
-  if (!modem.gprsConnect(GPRS_APN, "", "")) {
-    delay(10000);
-    return;
-  }
-  else {
-    PR_DEBUGLN("ok.");
   }
 
 

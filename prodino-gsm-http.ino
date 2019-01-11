@@ -12,7 +12,8 @@
 #include <ArduinoJson.h>
 #include <errno.h>
 
-#include <TinyGsmClient.h>
+#include <MKRGSM.h>
+
 /* https://github.com/NatanBiesmans/Arduino-POST-HTTP-Parser */
 #include <postParser.h>
 
