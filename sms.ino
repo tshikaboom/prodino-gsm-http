@@ -14,6 +14,8 @@
   This is text message 2
   OK
 */
+GSM_SMS sms_stream;
+
 void http_sms_get(EthernetClient client) {
   int ret;
   String local_buffer(received_chars);
@@ -76,7 +78,6 @@ void http_sms_get(EthernetClient client) {
 */
 void http_sms_post(EthernetClient client, PostParser http_data) {
   (void) client;
-  GSM_SMS sms_stream;
   StaticJsonBuffer<SMS_JSON_BUF_SIZE * 2> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
   unsigned int sms_target_index = http_data.getHeader().indexOf("/sms/+");
