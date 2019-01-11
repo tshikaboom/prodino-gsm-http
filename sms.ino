@@ -5,6 +5,11 @@
 #include <MKRGSM.h>
 
 #define SMS_JSON_BUF_SIZE 320
+#define NUMBER_LEN 20
+
+// arbitrarily twice the length of an SMS
+// might be a good idea to put a more sensible value here
+#define SMS_LEN 320
 /*
   AT reference:
   AT+CMGL="ALL"
@@ -18,58 +23,51 @@ GSM_SMS sms_stream;
 
 void http_sms_get(EthernetClient client) {
   int ret;
-  String local_buffer(received_chars);
-  String iterator;
-  String number;
-  String sms_contents;
-  int i = 0;
-  char *it;
-  int number_begin, number_end;
-  int sms_begin, sms_end;
-
-  SerialGSM.println("AT+CMGL=\"ALL\"");
-
-  modem_getResponse();
+  int i = 0, j = 0;
+  char remote_number[NUMBER_LEN];
+  char sms_contents[SMS_LEN];
+  char *c;
 
   strcat(current_response.body, "{[");
 
-  while ((it = strstr(received_chars, "+CMGL")) != NULL) {
-    String s = String(it);
-    s.trim();
-    if ((number_begin = s.indexOf("\"+")) != -1) {
-      if ((number_end = s.substring(number_begin).indexOf("\",")) != -1) {
-        // we've got a number
-        number_end--; // move to the last character of the number
-        number_begin++; // move to the '+' number prefix
-        number = s.substring(number_begin, number_begin + number_end);
-        PR_DEBUG("SMS from number ");
-        PR_DEBUG(number);
-        sms_begin = s.indexOf("\r\n");
-        if (sms_begin != -1) {
-          sms_begin += 2;
-          sms_end = s.substring(sms_begin).indexOf("\r\n");
-          sms_contents = s.substring(sms_begin, sms_begin + sms_end);
-          PR_DEBUG(": ");
-          PR_DEBUG(" \"");
-          PR_DEBUG(sms_contents);
-          PR_DEBUGLN("\"");
 
-          if (i > 0)
-            strcat(current_response.body, ",");
-
-          strcat(current_response.body, "\"from\":\"");
-          strcat(current_response.body, number.c_str());
-          strcat(current_response.body, "\", \"message\":\"");
-          strcat(current_response.body, sms_contents.c_str());
-          strcat(current_response.body, "\"");
-          i++;
-        }
-      }
+  while (sms_stream.available()) {
+    c = sms_contents;
+    for (j = 0; j < NUMBER_LEN; j++) {
+      remote_number[j] = '\0';
     }
+
+    for (j = 0; j < SMS_LEN; j++) {
+      sms_contents[j] = '\0';
+    }
+
+    // Any messages starting with # should be discarded
+    if (sms_stream.peek() == '#') {
+      sms_stream.flush();
+    }
+
+    while (*c == sms_stream.read() != -1) {
+      c++;
+    }
+    *(c++) = '\0';
+
+
+    if (i > 0)
+      strcat(current_response.body, ",");
+
+    strcat(current_response.body, "\"from\":\"");
+    strcat(current_response.body, remote_number);
+    strcat(current_response.body, "\", \"message\":\"");
+    strcat(current_response.body, sms_contents);
+    strcat(current_response.body, "\"");
+
+    i++; // increment number of messages
   }
+
   strcat(current_response.body, "]}");
 
   current_response.value = 0;
+
 }
 
 /**
