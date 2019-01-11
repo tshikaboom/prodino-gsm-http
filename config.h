@@ -32,6 +32,9 @@ static const char GSM_CME_ERROR[] = GSM_NL "+CME ERROR:";
 // Used to instantiate a buffer to read from serial
 #define CONFIG_SERIAL_BUF_SIZE 512
 
+#define NUMBER_LEN 20
+
+
 /*
  * This is used as a key to get an authorized IP from serial.
  * You can then send "<key>=<valid_ipv4_address>" to the serial port to add

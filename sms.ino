@@ -5,7 +5,6 @@
 #include <MKRGSM.h>
 
 #define SMS_JSON_BUF_SIZE 320
-#define NUMBER_LEN 20
 
 // arbitrarily twice the length of an SMS
 // might be a good idea to put a more sensible value here
