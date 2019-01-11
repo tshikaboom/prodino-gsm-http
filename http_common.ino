@@ -29,6 +29,16 @@ String getContentType(PostParser http_data) {
   return contentType;
 }
 
+// Helper to get the phone number from the HTTP request
+// This only accepts international format numbers
+String endpoint_get_number(PostParser http_data) {
+  unsigned int number_index = http_data.getHeader().indexOf("/+");
+  unsigned int number_end = http_data.getHeader().substring(number_index).indexOf(" HTTP");
+  String number = http_data.getHeader().substring(number_index, number_index + number_end);
+  number.trim();
+  return number;
+}
+
 // Helper functions to manipulate IP addresses
 uint32_t ip_to_decimal(IPAddress ip) {
   uint32_t a = ip[0], b = ip[1], c = ip[2], d = ip[3];

@@ -11,14 +11,7 @@ void http_call_get() {
 }
 
 void http_call_post(PostParser http_data) {
-  unsigned int call_target_index = http_data.getHeader().indexOf("/call/+");
-  unsigned int call_target_end = http_data.getHeader().substring(call_target_index).indexOf(" HTTP");
-
-  call_target_index += 6; // move index up to the '+' number prefix
-  String target_string = http_data.getHeader().substring(
-                           call_target_index,
-                           call_target_index + call_target_end);
-  target_string.trim();
+  String target_string = endpoint_get_number(http_data);
 
   if (vcs.voiceCall(target_string.c_str())) {
   while (vcs.getvoiceCallStatus() != TALKING) {

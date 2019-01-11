@@ -77,16 +77,10 @@ void http_sms_get() {
 void http_sms_post(PostParser http_data) {
   StaticJsonBuffer<SMS_JSON_BUF_SIZE * 2> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
-  unsigned int sms_target_index = http_data.getHeader().indexOf("/sms/+");
-  unsigned int sms_target_end = http_data.getHeader().substring(sms_target_index).indexOf(" HTTP");
-
 
   int ret;
-
-  sms_target_index += 5; // move index up to the '+' number prefix
-  String sms_target = http_data.getHeader().substring(sms_target_index, sms_target_index + sms_target_end);
-  sms_target.trim();
-
+  // move index up to the '+' number prefix
+  String sms_target = endpoint_get_number(http_data);
 
   PR_DEBUGLN("http_sms_post!");
 
