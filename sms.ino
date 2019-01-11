@@ -21,7 +21,7 @@
 */
 GSM_SMS sms_stream;
 
-void http_sms_get(EthernetClient client) {
+void http_sms_get() {
   int i = 0, j = 0;
   char remote_number[NUMBER_LEN];
   char sms_contents[SMS_LEN];
@@ -75,8 +75,7 @@ void http_sms_get(EthernetClient client) {
    http_sms_post: send an SMS to a recipient.
    This only accepts international format numbers, prefixed with a +.
 */
-void http_sms_post(EthernetClient client, PostParser http_data) {
-  (void) client;
+void http_sms_post(PostParser http_data) {
   StaticJsonBuffer<SMS_JSON_BUF_SIZE * 2> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
   unsigned int sms_target_index = http_data.getHeader().indexOf("/sms/+");
@@ -118,7 +117,7 @@ void http_sms_post(EthernetClient client, PostParser http_data) {
   return;
 }
 
-void http_sms_delete(EthernetClient client) {
+void http_sms_delete() {
   String recv_buf;
   SerialGSM.println("AT+CMGD=0,4");
 
@@ -136,28 +135,27 @@ void http_sms_delete(EthernetClient client) {
 }
 
 // Not implemented.
-void http_sms_put(EthernetClient client) {
-  (void) client;
+void http_sms_put() {
   current_response.value = -ENOSYS;
 }
 
 void http_sms_request(EthernetClient client, PostParser http_data) {
   if (http_data.getHeader().indexOf("GET /sms") != -1) {
-    http_sms_get(client);
+    http_sms_get();
   }
   if (http_data.getHeader().indexOf("POST /sms/") != -1) {
     http_data.grabPayload();
     PR_DEBUG("PUT SMS: payload is ");
     PR_DEBUGLN(http_data.getPayload());
-    http_sms_post(client, http_data);
+    http_sms_post(http_data);
   }
   if ((http_data.getHeader().indexOf("PUT /sms/") != -1) ||
       (http_data.getHeader().indexOf("PATCH /sms") != -1)) {
     http_data.grabPayload();
-    http_sms_put(client);
+    http_sms_put();
   }
   if (http_data.getHeader().indexOf("DELETE /sms") != -1) {
-    http_sms_delete(client);
+    http_sms_delete();
   }
 
 

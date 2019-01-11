@@ -299,7 +299,7 @@ void parseIP() {
   }
 }
 
-void http_acl_get(EthernetClient client) {
+void http_acl_get() {
   unsigned int i;
 
   strcat(current_response.body, "{[");
@@ -321,7 +321,7 @@ void http_acl_get(EthernetClient client) {
   current_response.value = 0;
 }
 
-void http_acl_patch(EthernetClient client, PostParser http_data) {
+void http_acl_patch(PostParser http_data) {
   StaticJsonBuffer<JSON_BUF_SIZE * 2> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
   IPAddress old_ip, new_ip;
@@ -348,7 +348,7 @@ void http_acl_patch(EthernetClient client, PostParser http_data) {
   current_response.value = -EINVAL;
 }
 
-void http_acl_post(EthernetClient client, PostParser http_data) {
+void http_acl_post(PostParser http_data) {
   StaticJsonBuffer<JSON_BUF_SIZE> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
 
@@ -365,7 +365,7 @@ void http_acl_post(EthernetClient client, PostParser http_data) {
   else current_response.value = -EINVAL;
 }
 
-void http_acl_delete(EthernetClient client, PostParser http_data) {
+void http_acl_delete(PostParser http_data) {
   StaticJsonBuffer<JSON_BUF_SIZE> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
 
@@ -383,20 +383,20 @@ void http_acl_delete(EthernetClient client, PostParser http_data) {
 
 void http_acl_request(EthernetClient client, PostParser http_data) {
   if (http_data.getHeader().indexOf("GET /acl") != -1) {
-    http_acl_get(client);
+    http_acl_get();
   }
   if (http_data.getHeader().indexOf("POST /acl") != -1) {
     http_data.grabPayload();
-    http_acl_post(client, http_data);
+    http_acl_post(http_data);
   }
   if ((http_data.getHeader().indexOf("PUT /acl") != -1) ||
       (http_data.getHeader().indexOf("PATCH /acl") != -1)) {
     http_data.grabPayload();
-    http_acl_patch(client, http_data);
+    http_acl_patch(http_data);
   }
   if (http_data.getHeader().indexOf("DELETE /acl") != -1) {
     http_data.grabPayload();
-    http_acl_delete(client, http_data);
+    http_acl_delete(http_data);
   }
 
   switch (current_response.value) {
