@@ -149,6 +149,11 @@ void http_request(EthernetClient client) {
             http_sms_request(client, http_data);
             break;
           }
+          if (http_data.getHeader().indexOf("/call") != -1) {
+            PR_DEBUGLN("http: /call endpoint");
+            http_call_request(client, http_data);
+            break;
+          }
         }
         else {
           error_connection(client);
