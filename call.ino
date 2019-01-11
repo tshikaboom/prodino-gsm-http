@@ -1,14 +1,34 @@
 /* SPDX-License-Identifier: MIT */
 
+#include <MKRGSM.h>
+
 #include "config.h"
+
+GSMVoiceCall vcs;
 
 void http_call_get() {
   current_response.value = -ENOSYS;
 }
 
 void http_call_post(PostParser http_data) {
-  (void) http_data;
-  current_response.value = -ENOSYS;
+  unsigned int call_target_index = http_data.getHeader().indexOf("/call/+");
+  unsigned int call_target_end = http_data.getHeader().substring(call_target_index).indexOf(" HTTP");
+
+  call_target_index += 6; // move index up to the '+' number prefix
+  String target_string = http_data.getHeader().substring(
+                           call_target_index,
+                           call_target_index + call_target_end);
+  target_string.trim();
+
+  if (vcs.voiceCall(target_string.c_str())) {
+  while (vcs.getvoiceCallStatus() != TALKING) {
+      ; // wait up man!
+    }
+
+    vcs.hangCall();
+  }
+
+  current_response.value = 0;
 }
 
 void http_call_patch(PostParser http_data) {
