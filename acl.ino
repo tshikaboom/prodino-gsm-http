@@ -228,7 +228,6 @@ int delete_ip_from_sim(uint32_t ip) {
 
 int delete_ip_from_acl(IPAddress ip) {
   unsigned int i;
-  unsigned int j;
   uint32_t ip_dec = ip_to_decimal(ip);
 
 

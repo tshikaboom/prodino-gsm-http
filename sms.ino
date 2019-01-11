@@ -22,10 +22,10 @@
 GSM_SMS sms_stream;
 
 void http_sms_get(EthernetClient client) {
-  int ret;
   int i = 0, j = 0;
   char remote_number[NUMBER_LEN];
   char sms_contents[SMS_LEN];
+  int signed_char;
   char *c;
 
   strcat(current_response.body, "{[");
@@ -46,7 +46,8 @@ void http_sms_get(EthernetClient client) {
       sms_stream.flush();
     }
 
-    while (*c == sms_stream.read() != -1) {
+    while ((signed_char = sms_stream.read()) != -1) {
+      *c = (char) signed_char;
       c++;
     }
     *(c++) = '\0';
@@ -80,7 +81,6 @@ void http_sms_post(EthernetClient client, PostParser http_data) {
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
   unsigned int sms_target_index = http_data.getHeader().indexOf("/sms/+");
   unsigned int sms_target_end = http_data.getHeader().substring(sms_target_index).indexOf(" HTTP");
-  unsigned int i = 0;
 
 
   int ret;
