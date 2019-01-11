@@ -75,13 +75,19 @@ void http_sms_get(EthernetClient client) {
    This only accepts international format numbers, prefixed with a +.
 */
 void http_sms_post(EthernetClient client, PostParser http_data) {
+  (void) client;
   StaticJsonBuffer<SMS_JSON_BUF_SIZE * 2> input_buffer;
   JsonObject& root = input_buffer.parseObject(http_data.getPayload());
-  unsigned int sms_target_index = http_data.getHeader().indexOf("+");
+  unsigned int sms_target_index = http_data.getHeader().indexOf("/sms/+");
   unsigned int sms_target_end = http_data.getHeader().substring(sms_target_index).indexOf(" HTTP");
+
+
+  int ret;
+
+  sms_target_index += 5; // move index up to the '+' number prefix
   String sms_target = http_data.getHeader().substring(sms_target_index, sms_target_index + sms_target_end);
   sms_target.trim();
-  int ret;
+
 
   PR_DEBUGLN("http_sms_post!");
 
