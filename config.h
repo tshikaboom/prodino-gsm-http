@@ -6,6 +6,13 @@
 // This is our modem identifier. Needed by TinyGsm.
 #define TINY_GSM_MODEM_UBLOX
 
+// These are lightly modified TinyGSM definitions. Left them for convenience
+#define GSM_NL "\r\n"
+static const char GSM_OK[] = "OK" GSM_NL;
+static const char GSM_ERROR[] = "ERROR" GSM_NL;
+static const char GSM_CME_ERROR[] = GSM_NL "+CME ERROR:";
+
+
 // define this to make the server chatty
 #define DEBUG
 
