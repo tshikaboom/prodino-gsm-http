@@ -4,7 +4,8 @@ ProDino GSM HTTP miniserver
 Features
 --------
 - Serves real citations from famous people to a web browser pointed to the
-board's IP address. This is configurable by (un)defining `CONFIG_CITATION`.
+board's IP address at endpoint `/`. This is configurable by (un)defining
+`CONFIG_CITATION`.
 - Support for a basic access control list. IP addresses not in the ACL trying to
 access the `/acl` endpoint currently get a HTTP 403 reply. The ACL is saved on
 the SIM card.
@@ -17,15 +18,21 @@ the SIM card.
     then returned.
     - An IP address in the ACL can be modified by `PUT`/`PATCH`ing with JSON data
     of the form `{ "old_ip" : "192.168.1.4", "ip" : "1.1.1.1" }`.
+- POST /sms/<+number> with a body of the form {"message":"message_contents"} sends
+a text message to number <+number> (interntional prefix) with the contents specified
+on the JSON body
+
 
 TODO
 ----
 - properly handle errors
-- Implement the `/call/` endpoint
+- Implement the `/call/` endpoint (in progress)
 - Test the `/sms/` endpoint: GET, POST, PUT/PATCH, DELETE
 - Document everything
 - Move as much Strings as possible to char arrays
-- Use local namespaces to get some safety wrt. code robustness
+- Use local namespaces or classes to get some safety wrt. code robustness. Maybe
+even port the whole thing to a proper C++ environment.
+- Use some kind of Contact API for ACL handling.
 
 The tty is accessible with baud 115200. There's lots of configuration options
 available in `config.h`. The server gets chatty when the macros `DEBUG` and
@@ -34,13 +41,12 @@ available in `config.h`. The server gets chatty when the macros `DEBUG` and
 Dependencies
 ------------
 
-- [ProDino MKR Zero](https://github.com/kmpelectronics/Arduino/tree/master/ProDinoMKRZero/releases)
-- [POST HTTP Parser](https://github.com/NatanBiesmans/Arduino-POST-HTTP-Parser) (may have licensing problems)
-- Ethernet2: would like to get rid of this, needs some modifications in POST
-HTTP Parser and the MKR Zero libraries. Upstream Ethernet.h seems to be working
-with these libraries.
+- [ProDino MKR Zero](https://github.com/kmpelectronics/Arduino/tree/master/ProDinoMKRZero/releases), version 1.0.5
+- [POST HTTP Parser](https://github.com/NatanBiesmans/Arduino-POST-HTTP-Parser) (may have licensing problems). The library has to be patched a bit to work with Ethernet.h and for
+compiling without warnings on SAMD chips.
+- Ethernet.h
 - ArduinoJson
-- TinyGsm
+- MKRGSM
 
 License
 -------
