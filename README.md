@@ -1,33 +1,40 @@
 ProDino GSM HTTP miniserver
 ===========================
 
-Features
---------
-- Serves real citations from famous people to a web browser pointed to the
+Endpoints implemented
+---------------------
+- `/`
+    - `GET` serves real citations from famous people to a web browser pointed to the
 board's IP address at endpoint `/`. This is configurable by (un)defining
 `CONFIG_CITATION`.
-- Support for a basic access control list. IP addresses not in the ACL trying to
-access the `/acl` endpoint currently get a HTTP 403 reply. The ACL is saved on
-the SIM card.
-    - Authorized IP addresses can be initially added with the serial console, by
-    sending a string of the form `"IPAddr=xxx.xxx.xxx.xxx"`.
-    - An authorized IP can add other IP addresses by `POST`ing with JSON data of
-    the form `{ "ip" : "1.2.3.4"}`
-    - A list of authorized IP addresses can be obtained by `GET`ing the endpoing.
-    A list of the form `{ [ { "ip" : "192.168.1.3"} , { "ip" : "1.1.1.1"} ] }` is
-    then returned.
-    - An IP address in the ACL can be modified by `PUT`/`PATCH`ing with JSON data
-    of the form `{ "old_ip" : "192.168.1.4", "ip" : "1.1.1.1" }`.
-- POST /sms/<+number> with a body of the form {"message":"message_contents"} sends
-a text message to number <+number> (interntional prefix) with the contents specified
-on the JSON body
-
+- `/acl`. This implements a basic ACL and returns HTTP 403 for IP addresses that
+connect to any other endpoint than `/`. The ACL is saved in the SIM card.
+    other endpoint than `/`.
+    - `GET`  Returns the ACL in a list of the form `{ [ { "ip" : "192.168.1.3"} , { "ip" : "1.1.1.1"} ] }`.
+    - `POST` adds an IP address with a JSON body of the form `{ "ip" : "1.2.3.4"}`.
+    - `PUT`/`PATCH` modifies an existing IP address in the ACL. The JSON body
+    must be of the form `{ "old_ip" : "192.168.1.4", "ip" : "1.1.1.1" }`.
+- An initial authorized IP addresses can be added with the serial console, by
+sending a string of the form `"IPAddr=x.x.x.x\n"`.
+- `/sms`
+    - `GET /sms` returns a JSON array of the form `[{"from":"<+number>", "message":"contents"}]`.
+    Messages are only returned once, I think it is because the modem moves them
+    to the read folder afterwards. MKRGSM doesn't seem to implement reading from
+    that folder.
+    - `POST /sms/<+number>` with a body of the form `{"message":"message_contents"}`
+    sends a text message to the number `<+number>` (interntional prefix) with the
+    contents specified in the JSON body.
+    - `PUT`/`PATCH`: not implemented.
+- `/call`
+    - `POST /call/<+number>` calls the specified number, and hangs up when the
+    recipient accepts the call.
+    - `PUT`/`PATCH`: not implemented.
 
 TODO
 ----
-- properly handle errors
-- Implement the `/call/` endpoint (in progress)
-- Test the `/sms/` endpoint: GET, POST, PUT/PATCH, DELETE
+- properly handle and return errors
+- Implement the `/call/` endpoint (`GET`)
+- Test the `/sms/` endpoint: (`DELETE`)
 - Document everything
 - Move as much Strings as possible to char arrays
 - Use local namespaces or classes to get some safety wrt. code robustness. Maybe
