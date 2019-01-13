@@ -108,10 +108,11 @@ void http_sms_post(PostParser http_data) {
   sms_stream.print(sms_contents);
   ret = sms_stream.endSMS();
 
-  PR_DEBUGLN(ret ? "OK." : "failed.");
+  PR_DEBUG("ret is ");
+  PR_DEBUGLN(ret);
 
   // let's use EIO to indicate SMS sending fail
-  current_response.value = ret ? 0 : -EIO;
+  current_response.value = ret == 1 ? 0 : -EIO;
   return;
 }
 

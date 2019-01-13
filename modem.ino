@@ -29,9 +29,7 @@ void setup_modem() {
   delay(100);
   digitalWrite(GSM_RESETN, LOW);
 
-  PR_DEBUG("Initializing modem... ");
-
-  enable_error_reporting();
+  // enable_error_reporting();
 
   // Connect to network with PIN
   PR_DEBUG("Waiting for network... ");
@@ -44,7 +42,7 @@ void setup_modem() {
     switch (status) {
       case GSM_READY:
         gsm_connected = true;
-        PR_DEBUGLN("ok, roaming in a foreign network");
+        PR_DEBUGLN("ok, connected.");
         break;
       case CONNECTING:
       case IDLE:
