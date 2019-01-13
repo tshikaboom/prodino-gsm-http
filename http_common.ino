@@ -33,6 +33,7 @@ String getContentType(PostParser http_data) {
 // This only accepts international format numbers
 String endpoint_get_number(PostParser http_data) {
   unsigned int number_index = http_data.getHeader().indexOf("/+");
+  number_index++;
   unsigned int number_end = http_data.getHeader().substring(number_index).indexOf(" HTTP");
   String number = http_data.getHeader().substring(number_index, number_index + number_end);
   number.trim();
