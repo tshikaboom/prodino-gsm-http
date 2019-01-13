@@ -40,17 +40,22 @@ void http_sms_get() {
       sms_contents[j] = '\0';
     }
 
+    sms_stream.remoteNumber(remote_number, NUMBER_LEN);
+
     // Any messages starting with # should be discarded
     if (sms_stream.peek() == '#') {
       sms_stream.flush();
     }
 
-    while ((signed_char = sms_stream.read()) != -1) {
-      *c = (char) signed_char;
-      c++;
-    }
-    *(c++) = '\0';
 
+    while ((signed_char = sms_stream.read()) != -1) {
+        *c = (char) signed_char;
+        c++;
+    }
+
+    if ((c = strstr(sms_contents, "\r\n")) != NULL) {
+      *c = '\0';
+    }
 
     if (i > 0)
       strcat(current_response.body, ",");
