@@ -27,7 +27,7 @@ void http_sms_get() {
   int signed_char;
   char *c;
 
-  strcat(current_response.body, "{[");
+  strcat(current_response.body, "[");
 
 
   while (sms_stream.available()) {
@@ -60,16 +60,16 @@ void http_sms_get() {
     if (i > 0)
       strcat(current_response.body, ",");
 
-    strcat(current_response.body, "\"from\":\"");
+    strcat(current_response.body, "{\"from\":\"");
     strcat(current_response.body, remote_number);
     strcat(current_response.body, "\", \"message\":\"");
     strcat(current_response.body, sms_contents);
-    strcat(current_response.body, "\"");
+    strcat(current_response.body, "\"}");
 
     i++; // increment number of messages
   }
 
-  strcat(current_response.body, "]}");
+  strcat(current_response.body, "]");
 
   current_response.value = 0;
 
