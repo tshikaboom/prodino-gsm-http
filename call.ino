@@ -14,7 +14,7 @@ void http_call_post(PostParser http_data) {
   String target_string = endpoint_get_number(http_data);
 
   if (vcs.voiceCall(target_string.c_str())) {
-  while (vcs.getvoiceCallStatus() != TALKING) {
+    while (vcs.getvoiceCallStatus() != TALKING) {
       ; // wait up man!
     }
 
@@ -53,6 +53,9 @@ void http_call_request(EthernetClient client, PostParser http_data) {
   }
 
   switch (current_response.value) {
+    case 0:
+      accept_connection(client);
+      break;
     case -ENOSYS:
     default:
       error_connection(client);
